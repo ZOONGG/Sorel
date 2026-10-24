@@ -28,7 +28,7 @@ function Copy-Helper {
 Copy-Helper
 $helper = Join-Path $current 'ReleaseUpdateSmoke.exe'
 Run $helper @(('"'+$data+'"'),'seed',('"'+$current+'/runtime/catalog/Veyra-1.0.1.jar"')) 'seed'
-# Establish the data state of a previously launched beta.1. Its normal settings
+# Establish the data state of a previously launched Sorel 1.0.0. Its normal settings
 # save already normalizes the obsolete UpdateCatalogAutomatically flag to false.
 Run "$current/Sorel.exe" @('--release-smoke') 'launch-1.0.0' @{
     SOREL_VISUAL_QA='1'; SOREL_VISUAL_QA_DATA_ROOT=$data

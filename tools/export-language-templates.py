@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
-source = (root / 'src/Moonrise/MainWindow.xaml.cs').read_text(encoding='utf-8-sig')
+source = (root / 'src/Sorel/MainWindow.xaml.cs').read_text(encoding='utf-8-sig')
 string = r'"((?:[^"\\]|\\.)*)"'
 translations = {}
 for match in re.finditer(r'\bT\(\s*' + string + r'\s*,\s*' + string + r'\s*\)', source):

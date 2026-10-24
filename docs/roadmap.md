@@ -78,7 +78,7 @@ Goal: stable, predictable Lunar launches through Sorel with supported Weave mods
 **Status: LONG-TERM PLAN, with release foundations implemented and acceptance outstanding.**
 
 - Final branding/name and website. No public website URL is promised.
-- Stable installer, updates, failure recovery and release process. Inno/ZIP packaging and Velopack beta UI/service exist; production Velopack packaging/feed and actual installed-update recovery remain to be accepted.
+- Stable installer, updates, failure recovery and release process. Sorel 1.0.0 stable packaging and local-only 1.0.0 → 1.0.1 installed update preservation are verified; automatic rollback remains unverified.
 - CI/CD, targeted automated checks, diagnostics and monitoring. Existing workflows and local diagnostics are foundations; they do not imply a telemetry service or complete reproducibility.
 - Prepare the full public release after Core and critical scenarios stabilize. The owner publishes GitHub Releases manually; no public release is currently available.
 

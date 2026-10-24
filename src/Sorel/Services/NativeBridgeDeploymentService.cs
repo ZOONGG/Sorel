@@ -6,7 +6,7 @@ namespace Sorel.Services;
 public sealed class NativeBridgeDeploymentService
 {
     public const string ResourceName = "Sorel.NativeBridge.dll";
-    public const string ExpectedSha256 = "43759ACE29C640D650DABC9DA73E9EE35A4ACECCE55562F6477C43CF8F6FB660";
+    public const string ExpectedSha256 = "0B9A65F1FCE05FF85322B76C92BE2424C8F483CE95BD524E9B670906054D8493";
 
     private readonly Func<Stream> _openResource;
     private readonly string _expectedSha256;

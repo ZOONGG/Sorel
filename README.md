@@ -12,7 +12,7 @@
 
 <p align="center">
   <a href="https://github.com/ZOONGG/Sorel/actions/workflows/build.yml"><img alt="Build" src="https://github.com/ZOONGG/Sorel/actions/workflows/build.yml/badge.svg"></a>
-  <a href="https://github.com/ZOONGG/Sorel/releases"><img alt="Release in preparation" src="https://img.shields.io/badge/release-in_preparation-lightgrey"></a>
+  <a href="https://github.com/ZOONGG/Sorel/releases"><img alt="Sorel 1.0.0" src="https://img.shields.io/badge/release-v1.0.0-violet"></a>
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-green"></a>
   <img alt="Windows" src="https://img.shields.io/badge/platform-Windows-0078D4?logo=windows">
   <img alt=".NET 8" src="https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet">
@@ -42,10 +42,10 @@ Sorel is a companion application, not a replacement for the official launcher. I
 
 <p align="center">
   <img src="docs/images/en/sorel-mods.png" width="49%" alt="Sorel Weave mods library">
-  <img src="docs/images/en/sorel-agents.png" width="49%" alt="Sorel Java agents library">
+  <img src="docs/images/en/sorel-catalog.png" width="49%" alt="Sorel package catalog">
 </p>
 
-Screenshots contain synthetic package metadata created only for documentation; those example packages are not shipped. The current catalog separately includes Cosmetics and Veyra.
+Screenshots show the current Sorel build with isolated data. The catalog bundles Sorel Cosmetics and Veyra.
 
 ## How Sorel works
 
@@ -73,7 +73,7 @@ The documented Lunar Launcher baseline is **3.7.23-ow** (ProductVersion 3.7.23.0
 
 ## Installation
 
-**No public release has been published yet.** The owner will publish release assets manually on [GitHub Releases](https://github.com/ZOONGG/Sorel/releases). Do not treat this link as an available download today.
+Stable release: [Sorel v1.0.0](https://github.com/ZOONGG/Sorel/releases/tag/v1.0.0).
 
 When a release is available:
 
@@ -82,11 +82,11 @@ When a release is available:
 
    ```powershell
    (Get-FileHash .\Sorel.App-stable-Setup.exe -Algorithm SHA256).Hash
-   Get-Content .\Sorel.App-stable-Setup.exe.sha256
+   Get-Content .\SHA256SUMS.txt
    ```
 
 3. Run `Sorel.App-stable-Setup.exe`, then start Sorel from its shortcut. Velopack installs per user into `%LOCALAPPDATA%\Sorel.App` without administrator rights.
-4. Use this production **Velopack** installer for integrated beta updates. Older Inno installations do not become Velopack installations automatically. `Sorel.UpdateSmoke` builds are local acceptance artifacts and must not be downloaded as a public release.
+4. The Velopack installation supports future stable Sorel updates. Test 1.0.1 packages are local acceptance artifacts and are never public release downloads.
 
 A ZIP can be used without installation if the release supplies one: extract the **whole** archive to a writable folder and run `Sorel.exe`. ZIP builds have no integrated Velopack updates. Despite the historical `Portable` filename/marker, current builds keep settings and packages in `%LOCALAPPDATA%\Sorel`, not beside the EXE. See [installation](docs/INSTALLER.md), [ZIP behavior](docs/PORTABLE_MODE.md), and [updates](docs/UPDATES.md).
 
@@ -94,13 +94,13 @@ Prepared installers are unsigned; Windows may show SmartScreen. Check the source
 
 ## Automatic updates
 
-Installed **Velopack** builds check the public [Sorel GitHub Releases](https://github.com/ZOONGG/Sorel/releases) source on startup when **Check for updates** is enabled. The current channel is **beta**: only newer `-stable versions` versions are accepted, including published prereleases; downgrades are disabled. A stable-channel switch is not implemented.
+Installed Velopack builds check [Sorel GitHub Releases](https://github.com/ZOONGG/Sorel/releases) automatically. Package ID: `Sorel.App`; channel: `stable`. Only newer stable versions are accepted. Prereleases and downgrades are rejected.
 
 Open **Settings → Updates** to check manually. **Automatically download updates** is enabled by default; turn it off to use **Download** yourself. Sorel shows availability, download progress and a ready-to-restart notification. Velopack verifies and stages the package in its installation package directory.
 
-After download, finish Minecraft and current Sorel operations, then use **Install and restart**. A staged update can also be applied on the next startup through Sorel's guarded apply path. Velopack's unconditional startup auto-apply is disabled. Application/tray cleanup precedes restart; active launch/game or operations block application. Settings and installed packages remain in the separate LocalAppData data root; the updater does not migrate or replace that root. Real installed-update preservation and apply-failure recovery are still pending acceptance tests.
+After download, finish Minecraft and current Sorel operations, then use **Install and restart**. A staged update can also be applied on the next startup through Sorel's guarded apply path. Velopack's unconditional startup auto-apply is disabled. Application/tray cleanup precedes restart; active launch/game or operations block application. Settings and installed packages remain in the separate LocalAppData data root; the updater does not migrate or replace that root. An isolated installed Sorel 1.0.0 → local-only 1.0.1 check passed with preserved settings/library. Rollback and live Minecraft remain untested.
 
-This requires a real Velopack installation, network access to public GitHub, and manually published matching stable feed/package assets (`releases.stable.json` and full `.nupkg`). ZIP, Inno and development builds have Velopack updates disabled. No production feed is available before the owner publishes a release. See [update details](docs/UPDATES.md).
+This requires a real Velopack installation, network access to public GitHub, and manually published matching stable feed/package assets (`releases.stable.json` and full `.nupkg`). ZIP, Inno and development builds have Velopack updates disabled. The production stable feed accompanies the release. See [update details](docs/UPDATES.md).
 
 ## First launch
 
