@@ -157,7 +157,7 @@ Local unlocking **does not guarantee visibility to other players using ordinary 
 
 ### Veyra
 
-Our [Veyra Weave mod](https://github.com/ZOONGG/Sorel-Veyra) derives from the archived [Stormy project by Tryflle and its contributors](https://github.com/Tryflle/stormy). It is evolving its own identity, UI and configuration. The catalog supplies **0.1.1-sorel.1** for Minecraft 1.8.9 / Weave 1.3.4; **Enter** opens ClickGUI. Current source registers combat, movement, player and render modules, including AimAssist, AutoClicker, Timer, SpeedMine, AutoTool, Array List and ESP modules, with configuration under `.weave/veyra`. Registration is not a claim that every feature has passed runtime testing. Standalone Veyra operation was user-confirmed; shared mixin targets can still conflict with other mods.
+Our [Veyra Weave mod](https://github.com/ZOONGG/Sorel-Veyra) derives from the archived [Stormy project by Tryflle and its contributors](https://github.com/Tryflle/stormy). It is evolving its own identity, UI and configuration. The catalog supplies **1.0.1** for Minecraft 1.8.9 / Weave 1.3.4; **Enter** opens ClickGUI. Current source registers combat, movement, player and render modules, including AimAssist, AutoClicker, Timer, SpeedMine, AutoTool, Array List and ESP modules, with configuration under `.weave/veyra`. Registration is not a claim that every feature has passed runtime testing. Standalone Veyra operation was user-confirmed; shared mixin targets can still conflict with other mods.
 
 ## Launch configuration
 

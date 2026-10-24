@@ -2,7 +2,7 @@
 
 ## Shipped catalog packages and mixed adapter
 
-Sorel Cosmetics 1.3.2 and Veyra 1.0.0-sorel.2 are supplied for offline
+Sorel Cosmetics 1.3.2 and Veyra 1.0.1 are supplied for offline
 catalog installation with pinned SHA-256 digests. Veyra derives from
 Tryflle/stormy; the owner confirmed redistribution permission on 2026-10-12.
 This permission is not a general grant to relicense upstream code as MIT.

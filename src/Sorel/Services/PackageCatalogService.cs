@@ -26,7 +26,7 @@ public sealed class PackageCatalogService(JarMetadataParser parser)
         Authors = [new("Sorel")], License = new(license), SupportedMinecraftVersions = ["1.8.9"],
         InstallPolicy = PackageInstallPolicy.OneClick, RiskLevel = kind == PackageKind.JavaAgent
             ? PackageRiskLevel.Normal : PackageRiskLevel.ServerDependent,
-        Releases = [new() { Version = version, PublishedAt = new DateTimeOffset(2026, 10, 12, 0, 0, 0, TimeSpan.Zero),
+        Releases = [new() { Version = version, PublishedAt = new DateTimeOffset(2026, 10, 24, 0, 0, 0, TimeSpan.Zero),
             Artifact = new() { DownloadMode = PackageDownloadMode.Bundled, AssetUrl = path,
                 FileName = Path.GetFileName(path), Sha256 = hash, MinecraftVersions = ["1.8.9"] } }]
     };

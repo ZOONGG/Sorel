@@ -25,7 +25,7 @@ Goal: stable, predictable Lunar launches through Sorel with supported Weave mods
 - RavenWeave 1.1.4 + maintained BWH were confirmed together in the real client using one Weave Loader 1.3.4.
 - The user confirmed Raven + BWH + unrestricted + Veyra + Cosmetics in the main build, and ordinary-mode operation. Exact adapters/maintained builds are involved; this does not certify arbitrary originals.
 - Cosmetics startup was repaired using the separate runtime build 1.3.1; the current standalone packaging fix is **1.3.2**, with user-confirmed local cosmetics operation and an ordinary-mode regression PASS.
-- Standalone Veyra operation was user-confirmed. Its recorded original artifact is the same pinned artifact supplied as catalog version 0.1.1-sorel.1.
+- Veyra 1.0.1 retains the GitHub Timer baseline. The Sorel release build was verified offline; no fresh Minecraft runtime test is claimed.
 - Fifteen original user JARs were preserved and their hashes matched the library index. Earlier integration work reported 40 targeted passing tests.
 - Tray lifecycle fixes are implemented. The earlier 25 targeted tests and subsequent lifecycle checks passed; full fresh visual and close-during-cleanup acceptance remains open.
 - Ordinary-mode repeat launch from the same Sorel instance passed: JVM exit 0, normal exit, graceful Lunar shutdown, no remaining owned processes and session removal.
