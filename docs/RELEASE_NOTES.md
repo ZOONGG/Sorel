@@ -3,7 +3,7 @@
 First independent stable Windows x64 release of Sorel.
 
 - Sorel application, installer, tray, diagnostics, localizations and branding.
-- Separate Sorel.App identity and %LOCALAPPDATA%\Sorel storage. Existing Moonrise installations and data are not migrated or modified.
+- Separate Sorel.App identity and %LOCALAPPDATA%\Sorel storage. Existing application installations and data are not migrated or modified.
 - Sorel Cosmetics 1.3.2 and Veyra 1.0.1, each bundled with its verified SHA-256.
 - Veyra Timer exactly matches the GitHub baseline; local Freeze experiments are excluded.
 - Verified Genesis synthetic adapter and approved prelaunch Lunar closure fix.

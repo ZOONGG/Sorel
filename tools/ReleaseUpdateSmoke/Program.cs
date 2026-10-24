@@ -29,7 +29,7 @@ if (args[1] is "seed" or "verify") {
 // Run only from current/ of a disposable, genuinely installed Velopack package.
 // The default Windows locator reads its installed manifest; no mock locator is used.
 IUpdateSource source = args[0].StartsWith("https://", StringComparison.Ordinal)
-    ? new GithubSource(args[0], accessToken: null, prerelease: true)
+    ? new GithubSource(args[0], accessToken: null, prerelease: false)
     : new SimpleFileSource(new DirectoryInfo(args[0]));
 var manager = new UpdateManager(source,
     new UpdateOptions { ExplicitChannel = "stable", AllowVersionDowngrade = false }, new WindowsVelopackLocator(null, null));

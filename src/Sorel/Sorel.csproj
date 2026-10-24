@@ -18,8 +18,8 @@
     <Version>1.0.0</Version>
     <StartupObject>Sorel.App</StartupObject>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
-    <FileVersion>0.1.0.0</FileVersion>
-    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <Authors>ZOONGG</Authors>
     <Company>ZOONGG</Company>
     <Copyright>Copyright В© 2026 ZOONGG</Copyright>

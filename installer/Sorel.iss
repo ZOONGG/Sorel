@@ -17,7 +17,7 @@
 #define AppExeName "Sorel.exe"
 
 [Setup]
-AppId={{0AFD97B2-2A8E-45C5-9297-FD7CE7C6CC88}
+AppId={{CD4157B6-BF56-4E6D-AAF1-941A1B529E28}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppVerName={#AppName} {#AppVersion}
