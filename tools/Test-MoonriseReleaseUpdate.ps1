@@ -35,6 +35,13 @@ function Copy-Helper {
 Copy-Helper
 $helper = Join-Path $current 'ReleaseUpdateSmoke.exe'
 Run $helper @(('"'+$data+'"'),'seed',('"'+$current+'/runtime/catalog/Veyra-0.1.1-moonrise.1.jar"')) 'seed'
+# Establish the data state of a previously launched beta.1. Its normal settings
+# save already normalizes the obsolete UpdateCatalogAutomatically flag to false.
+Run "$current/Moonrise.exe" @('--release-smoke') 'launch-beta1' @{
+    MOONRISE_VISUAL_QA='1'; MOONRISE_VISUAL_QA_DATA_ROOT=$data
+    MOONRISE_VISUAL_QA_SCREENSHOT="$root/baseline-beta1.png"; MOONRISE_VISUAL_QA_EXIT_AFTER_SCREENSHOT='1'
+}
+if (!(Test-Path "$root/baseline-beta1.png")) { throw 'Old installed application did not launch.' }
 $protected = @(Get-ChildItem "$data/settings", "$data/packages" -Recurse -File | Where-Object { $_.Extension -eq '.jar' -or $_.Name -eq 'moonrise-settings.json' })
 $before = @{}; foreach ($file in $protected) { $before[$file.FullName] = (Get-FileHash $file.FullName).Hash }
 if ($FeedMode -eq 'local') {
