@@ -6,7 +6,7 @@ namespace Moonrise.Services;
 // OfficialLunar current Weave only; adapter lifetime follows the existing launch session.
 public static class CurrentWeaveSyntheticAdapter
 {
-    public const string Id = "moonrise-current-weave-synthetic-1.0.0";
+    public const string Id = "moonrise-current-weave-synthetic-1.1.0";
     public static LaunchPlan Prepare(LaunchPlan plan, string sessionDirectory)
     {
         if (plan.WeaveMode != WeaveRuntimeMode.Current) return plan;
@@ -28,12 +28,19 @@ public static class CurrentWeaveSyntheticAdapter
     }
     internal static void ValidateGenesisHash(string path)
     {
-        // Both exact builds passed SyntheticIntegrationTest against their real game loader.
+        // Exact builds verified by SyntheticIntegrationTest against their real game loader.
         var hash = File.Exists(path) ? LocalPackageLibrary.ComputeSha256(path) : "";
-        if (!hash.Equals("e3f34c4ad92f1c3bae83c17bbacb45952c156df359cb39d6c34d086b05e83c44", StringComparison.OrdinalIgnoreCase)
-            && !hash.Equals("40797ad1d1449ffff7c6e7342b79a3edc8d08517505dc2d57ce9d97e0669389c", StringComparison.OrdinalIgnoreCase))
-            throw new InvalidDataException($"Current Weave synthetic bridge requires a verified Genesis runtime: {Path.GetFileName(path)}.");
+        if (!IsVerifiedGenesisHash(hash))
+            throw new InvalidDataException(hash.Length == 0
+                ? $"Current Weave synthetic bridge: Genesis runtime was not found: {Path.GetFileName(path)}. Launch Lunar 1.8.9 once to prepare its runtime."
+                : $"Current Weave synthetic bridge: unverified Genesis runtime SHA-256={hash}. Moonrise requires an adapter update for this Lunar runtime.");
     }
+    internal static bool IsVerifiedGenesisHash(string hash) =>
+        hash.Equals("e3f34c4ad92f1c3bae83c17bbacb45952c156df359cb39d6c34d086b05e83c44", StringComparison.OrdinalIgnoreCase)
+        || hash.Equals("40797ad1d1449ffff7c6e7342b79a3edc8d08517505dc2d57ce9d97e0669389c", StringComparison.OrdinalIgnoreCase)
+        || hash.Equals("b8dc53894251ba825c0b0a899eeac00db8cf311c9ba02e182f8650c4887b9cfc", StringComparison.OrdinalIgnoreCase)
+        || hash.Equals("26fe6dd9d4a6c3630aca96c22faf52ed6d6fa4f772d23258e1e91f8289abb0ef", StringComparison.OrdinalIgnoreCase);
+
     internal static void WriteJar(string path)
     {
         using var file = new FileStream(path, FileMode.CreateNew);

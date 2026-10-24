@@ -147,6 +147,52 @@ public sealed class LunarLaunchLifecycleService
         finally { _quitGate.Release(); }
     }
 
+    // Called only after the prelaunch close prompt or its remembered approval.
+    // Unlike automatic post-game cleanup, this can close a user-started singleton.
+    internal async Task<LunarLauncherCloseResult> QuitLauncherBeforeLaunchAsync(
+        string path, TimeSpan timeout, CancellationToken cancellationToken,
+        IProcessTreeSnapshot? tree = null, Func<Task<bool>>? sendQuit = null)
+    {
+        await _quitGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            tree ??= new WindowsProcessTreeSnapshot();
+            var initial = _backend.Snapshot().Where(p => IsOfficialLauncherProcess(p, path)).ToArray();
+            var ids = initial.Select(p => p.ProcessId).ToArray();
+            if (ids.Length == 0) return new(ids, [], [], []);
+            bool CanDispatch()
+            {
+                var processes = _backend.Snapshot();
+                var snapshot = tree.Capture();
+                if (processes.Any(IsLikelyMinecraftProcess) ||
+                    processes.Any(p => Normalize(p.Name) == "lunarclient" && !IsOfficialLauncherProcess(p, path))) return false;
+                var current = processes.Where(p => IsOfficialLauncherProcess(p, path)).ToArray();
+                if (current.Length != initial.Length || current.Any(p => p.StartTimeUtc is null ||
+                    !initial.Any(i => i.ProcessId == p.ProcessId && i.StartTimeUtc == p.StartTimeUtc) ||
+                    !snapshot.Any(t => t.ProcessId == p.ProcessId && t.StartTimeUtc == p.StartTimeUtc &&
+                        string.Equals(t.ExecutablePath, path, StringComparison.OrdinalIgnoreCase)))) return false;
+                var descendants = ids.ToHashSet();
+                bool changed;
+                do
+                {
+                    changed = false;
+                    foreach (var p in snapshot)
+                        if (descendants.Contains(p.ParentProcessId)) changed |= descendants.Add(p.ProcessId);
+                } while (changed);
+                return !snapshot.Any(p => Normalize(p.Name) is "java" or "javaw" &&
+                    (descendants.Contains(p.ProcessId) ||
+                     (p.ExecutablePath?.Replace('\\', '/').Contains("/.lunarclient/", StringComparison.OrdinalIgnoreCase) ?? false)));
+            }
+            if (!CanDispatch() || !CanDispatch()) return new(ids, [], [], ids) { CommandCompleted = false };
+            cancellationToken.ThrowIfCancellationRequested();
+            var sent = sendQuit is not null ? await sendQuit() : await SendQuitAsync(path, cancellationToken);
+            var remaining = await WaitForRemainingAsync(path, timeout, cancellationToken);
+            if (remaining.Length == 0) _controlledRoot = null;
+            return new(ids, ids.Except(remaining).ToArray(), [], remaining) { CommandCompleted = sent };
+        }
+        finally { _quitGate.Release(); }
+    }
+
     private async Task<LunarLauncherCloseResult> QuitControlledLauncherCoreAsync(
         string path, TimeSpan timeout, CancellationToken cancellationToken,
         IProcessTreeSnapshot? tree, Func<Task<bool>>? sendQuit)

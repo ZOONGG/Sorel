@@ -62,7 +62,7 @@ jobs:
         shell: pwsh
         run: |
           ./tools/New-MoonriseRelease.ps1 `
-            -Version "0.1.0-beta.1" `
+            -Version "0.1.0-beta.2" `
             -OutputRoot "artifacts/release" `
             -Velopack -VpkPath artifacts/velopack-tools/vpk.exe `
             -SkipRestore `

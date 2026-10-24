@@ -3310,8 +3310,8 @@ public partial class MainWindow : Window
                     $"Lunar close requested: attempt={launchAttemptId}; auto={_settings.AutoCloseLunarBeforeLaunch}; " +
                     $"pids=[{string.Join(",", prelaunch.LauncherProcessIds)}]");
                 launchReport.Set("lunarCloseRequested", true);
-                AddDiagnostic("Lunar shutdown mechanism: close-launcher deeplink; controlled singleton only; no force fallback.");
-                var closeResult = await _lunarLifecycle.QuitControlledLauncherAsync(
+                AddDiagnostic("Lunar shutdown mechanism: approved prelaunch close-launcher deeplink; game and process identity guards; no force fallback.");
+                var closeResult = await _lunarLifecycle.QuitLauncherBeforeLaunchAsync(
                     launcherPath,
                     TimeSpan.FromSeconds(10),
                     token);

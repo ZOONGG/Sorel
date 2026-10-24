@@ -286,11 +286,58 @@ public sealed class LunarLaunchLifecycleTests
         Assert.Contains(overlay.Descendants(ui + "ContentControl"),
             element => (string?)element.Attribute("Template") == "{StaticResource LunarClientIconTemplate}");
         Assert.Contains("PromptToCloseRunningLunarAsync", code, StringComparison.Ordinal);
-        Assert.Contains("QuitControlledLauncherAsync", code, StringComparison.Ordinal);
+        Assert.Contains("QuitLauncherBeforeLaunchAsync", code, StringComparison.Ordinal);
         Assert.Contains("LaunchSingleFlight.TryEnter", code, StringComparison.Ordinal);
         Assert.Contains("LaunchSingleFlight.TrySend", code, StringComparison.Ordinal);
         Assert.Contains("background?.TrackTrustedProcess(sender.Id)", code, StringComparison.Ordinal);
         Assert.DoesNotContain("РЎРЅР°С‡Р°Р»Р° РїРѕР»РЅРѕСЃС‚СЊСЋ Р·Р°РєСЂРѕР№С‚Рµ Lunar Launcher", code, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task ApprovedPrelaunchQuitCanCloseUserStartedSingleton()
+    {
+        var start = DateTimeOffset.UtcNow;
+        var backend = new FakeBackend([new(11, "Lunar Client", LauncherPath, 0, "", false, start)]);
+        var service = new LunarLaunchLifecycleService(backend);
+        var tree = new FakeProcessTree([new(11, 0, "Lunar Client", LauncherPath, start)]);
+        var sends = 0;
+        var result = await service.QuitLauncherBeforeLaunchAsync(LauncherPath, TimeSpan.Zero,
+            CancellationToken.None, tree, () => { sends++; backend.Processes.Clear(); return Task.FromResult(true); });
+        Assert.True(result.Success);
+        Assert.Equal(1, sends);
+        Assert.Empty(backend.CloseRequests);
+        Assert.Empty(backend.ForceRequests);
+    }
+
+    [Theory]
+    [InlineData("minecraft")]
+    [InlineData("hidden-java")]
+    [InlineData("foreign-installation")]
+    [InlineData("missing-tree")]
+    [InlineData("pid-reused")]
+    public async Task ApprovedPrelaunchQuitRetainsGameAndIdentityGuards(string scenario)
+    {
+        var start = DateTimeOffset.UtcNow;
+        var backend = new FakeBackend([new(11, "Lunar Client", LauncherPath, 0, "", false, start)]);
+        if (scenario == "minecraft") backend.Processes.Add(new(12, "javaw", "javaw.exe", 1, "Minecraft", true, start));
+        if (scenario == "foreign-installation") backend.Processes.Add(new(12, "Lunar Client", @"D:\Other\Lunar Client.exe", 0, "", false, start));
+        var captures = 0;
+        var tree = new ChangingProcessTree(() => {
+            captures++;
+            if (scenario == "missing-tree") return [];
+            if (scenario == "pid-reused" && captures == 1)
+                backend.Processes[0] = new(11, "Lunar Client", LauncherPath, 0, "", false, start.AddSeconds(1));
+            return scenario == "hidden-java"
+                ? [new(11, 0, "Lunar Client", LauncherPath, start), new(12, 11, "javaw", "javaw.exe", start)]
+                : [new(11, 0, "Lunar Client", LauncherPath, start)];
+        });
+        var sent = false;
+        var result = await new LunarLaunchLifecycleService(backend).QuitLauncherBeforeLaunchAsync(
+            LauncherPath, TimeSpan.Zero, CancellationToken.None, tree, () => { sent = true; return Task.FromResult(true); });
+        Assert.False(result.Success);
+        Assert.False(sent);
+        Assert.Empty(backend.CloseRequests);
+        Assert.Empty(backend.ForceRequests);
     }
 
     [Fact]

@@ -5,7 +5,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.lang.reflect.*;
 import java.util.jar.*;
-import com.moonsworth.lunar.ichor.*;
 import net.weavemc.loader.impl.mixin.*;
 import net.weavemc.loader.impl.shaded.mappings.ClasspathLoaders;
 import net.weavemc.loader.impl.shaded.asm.*;
@@ -17,6 +16,13 @@ public final class SyntheticIntegrationTest {
     // Fixture provider only; never packaged in the adapter.
     public static byte[] generate(ClassLoader loader, String name) { return name.equals(generatedName) ? generated : null; }
     public static void main(String[] args) throws Exception {
+        String gameLoaderName = args.length > 1 ? args[1] : SyntheticLoaderAdapter.GENESIS;
+        boolean current = gameLoaderName.equals(SyntheticLoaderAdapter.GENESIS_9_10_1);
+        String pipelineName = "com.moonsworth.lunar.ichor." + (current
+                ? "CHHCRRRCCHCHOHCIHIHCIOHRORHCRC" : "ROHIOOCICRORHRCIHHHHHHRICCCRRC");
+        String stageName = "com.moonsworth.lunar.ichor." + (current
+                ? "OOCHHCIRCOCHOOOCIOIIHCRIIHRRCH" : "OOIOHHHCIICRRRCICOIIIRRRICOCIC");
+        String exclusionsSetter = current ? "COICRCRHIRHOOHHIOICHRHOCCRCCHO" : "CCIIROCRRHHROIRHRRIHOCRHIHIOHO";
         System.getProperties().put("weave.game.info", Map.of("version", "1.8.9", "client", "lunar client"));
         var sandbox = new SandboxedMixinLoader(SyntheticIntegrationTest.class.getClassLoader(), ClasspathLoaders.INSTANCE.fromLoader(SyntheticIntegrationTest.class.getClassLoader()));
         var state = sandbox.getState(); state.initialize();
@@ -70,11 +76,11 @@ public final class SyntheticIntegrationTest {
         try { SyntheticResolver.generateOwned(state, SyntheticResolver.PREFIX + "args.Args$999"); throw new AssertionError("Unknown generation accepted"); }
         catch (IllegalStateException expected) { }
         byte[] original;
-        try (var jar = new JarFile(args[0])) { original = jar.getInputStream(jar.getJarEntry(SyntheticLoaderAdapter.GENESIS + ".class")).readAllBytes(); }
+        try (var jar = new JarFile(args[0])) { original = jar.getInputStream(jar.getJarEntry(gameLoaderName + ".class")).readAllBytes(); }
         byte[] adapted = SyntheticLoaderAdapter.adapt(original);
         // Same composition as live premain ordering: our bridge, then untouched Weave's loader accessor transform.
         adapted = net.weavemc.loader.impl.bootstrap.transformer.URLClassLoaderTransformer.INSTANCE.transform(
-            SyntheticIntegrationTest.class.getClassLoader(), SyntheticLoaderAdapter.GENESIS, adapted);
+            SyntheticIntegrationTest.class.getClassLoader(), gameLoaderName, adapted);
         var node = new ClassNode(); new ClassReader(adapted).accept(node, 0);
         for (var method : node.methods) for (var insn : method.instructions)
             if (insn instanceof LdcInsnNode constant && "dev.moonrise.current.SyntheticResolver".equals(constant.cst))
@@ -89,13 +95,21 @@ public final class SyntheticIntegrationTest {
             }
         };
         var loaderType = holder.define(writer.toByteArray());
-        var stage = new OOIOHHHCIICRRRCICOIIIRRRICOCIC() {
-            public String name(){return "offline";} public boolean hasMixinRuntime(){return false;}
-            public boolean shouldUseParentAsMixinRuntime(){return false;} public boolean shouldUseClassBytes(){return false;}
-        };
-        var pipeline = new ROHIOOCICRORHRCIHHHHHHRICCCRRC(List.of(stage), null, SyntheticIntegrationTest.class.getClassLoader());
-        var game = (URLClassLoader)loaderType.getConstructor(URL[].class, ROHIOOCICRORHRCIHHHHHHRICCCRRC.class).newInstance(new URL[]{SyntheticIntegrationTest.class.getProtectionDomain().getCodeSource().getLocation()}, pipeline);
-        loaderType.getMethod("CCIIROCRRHHROIRHRRIHOCRHIHIOHO", Set.class).invoke(game,
+        var stageType = Class.forName(stageName);
+        var stage = java.lang.reflect.Proxy.newProxyInstance(stageType.getClassLoader(), new Class[]{stageType},
+            (proxy, method, values) -> switch (method.getName()) {
+                case "name", "toString" -> "offline";
+                case "hashCode" -> System.identityHashCode(proxy);
+                case "equals" -> proxy == values[0];
+                default -> false;
+            });
+        var pipelineType = Class.forName(pipelineName);
+        var pipelineConstructor = Arrays.stream(pipelineType.getConstructors())
+            .filter(c -> c.getParameterCount() == 3 && c.getParameterTypes()[0] == List.class
+                && c.getParameterTypes()[2] == ClassLoader.class).findFirst().orElseThrow();
+        var pipeline = pipelineConstructor.newInstance(List.of(stage), null, SyntheticIntegrationTest.class.getClassLoader());
+        var game = (URLClassLoader)loaderType.getConstructor(URL[].class, pipelineType).newInstance(new URL[]{SyntheticIntegrationTest.class.getProtectionDomain().getCodeSource().getLocation()}, pipeline);
+        loaderType.getMethod(exclusionsSetter, Set.class).invoke(game,
             Set.of("dev.moonrise.current.SyntheticResolver", "dev.moonrise.current.SyntheticFixture", "net.weavemc.loader.impl.shaded.spongepowered.asm.mixin.injection.invoke.arg.Args",
                 "net.weavemc.loader.impl.shaded.spongepowered.asm.mixin.injection.invoke.arg.ArgumentCountException",
                 "net.weavemc.loader.impl.shaded.spongepowered.asm.mixin.injection.invoke.arg.ArgumentIndexOutOfBoundsException"));
@@ -106,7 +120,8 @@ public final class SyntheticIntegrationTest {
         provider.getField("generated").set(null, generated);
         provider.getField("generatedName").set(null, generatedName);
         // The exact untouched Genesis previously cannot find these registered synthetic bytes.
-        var baseline = new com.moonsworth.lunar.genesis.ORCOIHCCICICIHRCCCCHHHRICHHICI(new URL[0], pipeline);
+        var baseline = (URLClassLoader)Class.forName(gameLoaderName.replace('/', '.'))
+            .getConstructor(URL[].class, pipelineType).newInstance(new URL[0], pipeline);
         try { baseline.loadClass(generatedName); throw new AssertionError("Baseline unexpectedly resolved synthetic"); }
         catch (ClassNotFoundException expected) { }
         var loaded = game.loadClass(generatedName);

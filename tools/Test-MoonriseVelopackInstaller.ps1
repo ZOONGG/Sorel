@@ -16,7 +16,7 @@ New-Item -ItemType Directory -Path $root | Out-Null
 $setup = (Resolve-Path -LiteralPath $SetupPath).Path
 $process = Start-Process $setup -ArgumentList @('--silent', '--installto', ('"' + $install + '"'), '--log', ('"' + (Join-Path $root 'setup.log') + '"')) -WindowStyle Hidden -PassThru
 if (-not $process.WaitForExit(60000) -or $process.ExitCode -ne 0) { throw 'Velopack installation failed or timed out.' }
-foreach ($required in 'Update.exe','current/Moonrise.exe','current/runtime/catalog/Veyra-0.1.1-moonrise.1.jar','current/runtime/maintained-builds/moonrise-cosmetics-1.3.2.jar') {
+foreach ($required in 'Update.exe','current/Moonrise.exe','current/runtime/catalog/Veyra-1.0.0-moonrise.2.jar','current/runtime/maintained-builds/moonrise-cosmetics-1.3.2.jar') {
     if (-not (Test-Path -LiteralPath (Join-Path $install $required))) { throw "Missing installed file: $required" }
 }
 $exe = Join-Path $install 'current/Moonrise.exe'

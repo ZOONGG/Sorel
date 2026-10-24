@@ -1,13 +1,9 @@
-# Moonrise 0.1.0-beta.1
+# Moonrise 0.1.0-beta.2
 
-First public Windows x64 beta of Moonrise, a companion launcher and package manager for existing official Lunar Client 1.8.9 profiles.
+- Bundles Veyra 1.0.0-moonrise.2 with Timer exactly matching GitHub main; local Freeze experiments are excluded. Catalog metadata pins the published SHA-256.
+- Supports the newly offline-verified Genesis runtime 26fe6dd9d4a6c3630aca96c22faf52ed6d6fa4f772d23258e1e91f8289abb0ef through a separate synthetic adapter; original JARs remain unchanged.
+- Fixes approved prelaunch closure of user-started Lunar after restarting Moonrise. Automatic post-game cleanup still requires process ownership. Active-game guards and no-force policy remain.
+- Keeps Velopack 1.2.161, Moonrise.App and beta channel. Correct releases.beta.json and matching full package support updates from installed beta.1. Auto Download stages the package; restart remains guarded.
+- Retains Cosmetics 1.3.2, Mixed Weave Adapter, user packages and settings.
 
-- Offline catalog includes Moonrise Cosmetics 1.3.2 and Veyra 0.1.1-moonrise.1 with pinned SHA-256 checks.
-- Import and manage local Weave mods and Java agents; third-party originals remain unchanged.
-- English and Russian interface, local diagnostics, launch lifecycle and tray controls.
-- Self-contained Windows x64 Velopack Setup and complete no-install ZIP; no separate .NET installation required.
-- Installed builds support the beta update feed on this repository's GitHub Releases. ZIP builds do not support automatic updates.
-
-Install using `Moonrise.App-beta-Setup.exe`. For the ZIP, extract the entire archive before running Moonrise.exe. Both use `%LOCALAPPDATA%\Moonrise` for settings and packages. Official Lunar Launcher and authentication are required; Moonrise does not supply Minecraft or Lunar accounts.
-
-This beta is unsigned. Check SHA-256 before installation. Live GitHub update delivery and automatic rollback require the post-publication acceptance checks in docs/final-release-validation.md. Experimental mixed-Weave support remains experimental; compatibility depends on the package and Lunar build.
+Use the installed application's updater. Setup is for new installations; ZIP builds do not support integrated updates. Minecraft/server runtime was not tested. Existing credits, upstream notices and distribution permissions remain.

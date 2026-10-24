@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
@@ -15,7 +15,7 @@
     <SelfContained>true</SelfContained>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-    <Version>0.1.0-beta.1</Version>
+    <Version>0.1.0-beta.2</Version>
     <StartupObject>Moonrise.App</StartupObject>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
     <FileVersion>0.1.0.0</FileVersion>
@@ -63,7 +63,7 @@
     <Resource Include="Assets\Backgrounds\moonrise-cosmic-hero.png" />
     <EmbeddedResource Include="..\..\runtime\bridge\Moonrise.Native.dll" LogicalName="Moonrise.NativeBridge.dll" />
     <EmbeddedResource Include="..\..\runtime\adapters\moonrise-bwh-exitlag-network-agent.jar" LogicalName="Moonrise.BwhNetworkAgent.jar" />
-    <Content Include="..\..\runtime\catalog\Veyra-0.1.1-moonrise.1.jar" Link="runtime\catalog\Veyra-0.1.1-moonrise.1.jar" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+    <Content Include="..\..\runtime\catalog\Veyra-1.0.0-moonrise.2.jar" Link="runtime\catalog\Veyra-1.0.0-moonrise.2.jar" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
     <Content Include="..\..\extensions\MixedWeave\*" Link="licenses\mixed-weave\%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
     <Content Include="..\..\tools\mixed-weave-adapter\*.java" Link="licenses\mixed-weave\moonrise-source\%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
     <Content Include="..\..\tools\Build-MixedWeaveAdapter.ps1" Link="licenses\mixed-weave\Build-MixedWeaveAdapter.ps1" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />

@@ -1,4 +1,4 @@
-﻿param(
+param(
     [string]$PrivatePatterns = $env:MOONRISE_PRIVATE_PATTERNS
 )
 
@@ -13,7 +13,7 @@ try {
         'runtime/main-cosmetics-build/moonrise-cosmetics-1.3.2.jar' = 'EFBAC1DC8F6B28EE1A13E294FF7DC03880C384306F1FFAB88738E3DCD1DC4354'
         'runtime/mixed-weave-adapter/moonrise-mixed-agent-0.1.0.jar' = 'B1E5408C014486731E24B56EFCD7B32F2219249A17ACCACA9F897270C2EB70E4'
         'runtime/mixed-weave-adapter/moonrise-mixed-raven-abi-0.1.0.jar' = 'F73CDA328C5538BE38316207C184B3D6734E0A63FEBA0F958E9CE57304C473BC'
-        'runtime/catalog/Veyra-0.1.1-moonrise.1.jar' = '779760392BCA1F269D0EB325E78950249D355E94A09C90988108C3CCD94D95BD'
+        'runtime/catalog/Veyra-1.0.0-moonrise.2.jar' = '22B8788650D74C8ADDECE463E376FE9700F0084DCB3492F931D0FAD12CC23427'
         'extensions/MixedWeave/Weave-Loader-0.2.6-source.zip' = 'FE9EFB97F292DEB931923094F755D1EF59E8C6696B246CED0A32497648D1F711'
     }
     foreach ($file in $approvedArtifacts.Keys) {

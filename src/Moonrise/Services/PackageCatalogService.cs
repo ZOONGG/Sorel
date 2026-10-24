@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using Moonrise.Models;
 
 namespace Moonrise.Services;
@@ -12,10 +12,10 @@ public sealed class PackageCatalogService(JarMetadataParser parser)
             "Local Lunar cosmetics and outfit persistence; standalone Java agent for Minecraft 1.8.9.",
             "runtime/maintained-builds/moonrise-cosmetics-1.3.2.jar",
             "EFBAC1DC8F6B28EE1A13E294FF7DC03880C384306F1FFAB88738E3DCD1DC4354", "MIT; ASM BSD-3-Clause"),
-        Bundled("veyra", "Veyra", "0.1.1-moonrise.1", PackageKind.WeaveMod,
+        Bundled("veyra", "Veyra", "1.0.0-moonrise.2", PackageKind.WeaveMod,
             "Client mod for Weave 1.3.4 on Minecraft 1.8.9; ClickGUI: Enter.",
-            "runtime/catalog/Veyra-0.1.1-moonrise.1.jar",
-            "779760392BCA1F269D0EB325E78950249D355E94A09C90988108C3CCD94D95BD", "Distribution permission confirmed by owner")
+            "runtime/catalog/Veyra-1.0.0-moonrise.2.jar",
+            "22B8788650D74C8ADDECE463E376FE9700F0084DCB3492F931D0FAD12CC23427", "Distribution permission confirmed by owner")
     ];
 
     private static PackageManifest Bundled(string id, string name, string version, PackageKind kind,

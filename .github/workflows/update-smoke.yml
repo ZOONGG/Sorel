@@ -1,0 +1,38 @@
+name: Installed release update smoke
+on:
+  workflow_dispatch:
+    inputs:
+      feed_mode:
+        type: choice
+        options: [local, github]
+        default: github
+      release_tag:
+        default: v0.1.0-beta.2
+        type: string
+permissions:
+  contents: read
+jobs:
+  update:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+      - name: Install published beta.1 and apply beta.2
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./tools/Test-MoonriseReleaseUpdate.ps1 -FeedMode '${{ inputs.feed_mode }}' -ReleaseTag '${{ inputs.release_tag }}'
+      - name: Preserve update evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: installed-update-${{ inputs.feed_mode }}
+          path: |
+            artifacts/release-update-*/**/*.txt
+            artifacts/release-update-*/**/*.json
+            artifacts/release-update-*/**/*.png
+            artifacts/release-update-*/**/*.log
+          if-no-files-found: warn

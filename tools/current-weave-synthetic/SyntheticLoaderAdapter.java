@@ -7,17 +7,21 @@ import net.weavemc.loader.impl.shaded.asm.tree.*;
 
 public final class SyntheticLoaderAdapter implements ClassFileTransformer {
     static final String GENESIS = "com/moonsworth/lunar/genesis/ORCOIHCCICICIHRCCCCHHHRICHHICI";
+    static final String GENESIS_9_10_1 = "com/moonsworth/lunar/genesis/HIIIRCIHHCOIRCOHOIIRRCRIHHRICI";
+    private static boolean isGameLoader(String name) {
+        return GENESIS.equals(name) || GENESIS_9_10_1.equals(name);
+    }
     private final URL self;
     private SyntheticLoaderAdapter(URL self) { this.self = self; }
     public static void install(Instrumentation inst, URL self) { inst.addTransformer(new SyntheticLoaderAdapter(self)); }
     public byte[] transform(ClassLoader loader, String name, Class<?> old, ProtectionDomain domain, byte[] bytes) {
         try {
-            if (GENESIS.equals(name)) {
+            if (isGameLoader(name)) {
                 var result = adapt(bytes);
                 System.err.println("[Moonrise current] synthetic class loading bridge installed");
                 return result;
             }
-            if ("net/weavemc/loader/impl/WeaveLoader".equals(name) && loader != null && loader.getClass().getName().replace('.', '/').equals(GENESIS)) {
+            if ("net/weavemc/loader/impl/WeaveLoader".equals(name) && loader != null && isGameLoader(loader.getClass().getName().replace('.', '/'))) {
                 loader.getClass().getMethod("addURL", URL.class).invoke(loader, self);
             }
         } catch (Exception failure) {
