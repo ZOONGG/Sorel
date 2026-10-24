@@ -1,6 +1,6 @@
-# Contributing to Moonrise
+# Contributing to Sorel
 
-Thank you for helping improve Moonrise.
+Thank you for helping improve Sorel.
 
 ## Before you start
 
@@ -21,10 +21,10 @@ Requirements:
 Run the standard validation:
 
 ```powershell
-dotnet restore Moonrise.sln
-dotnet build Moonrise.sln -c Release --no-restore
-dotnet test Moonrise.sln -c Release --no-build
-dotnet publish src/Moonrise/Moonrise.csproj -c Release -r win-x64 --self-contained true -o release/Moonrise
+dotnet restore Sorel.sln
+dotnet build Sorel.sln -c Release --no-restore
+dotnet test Sorel.sln -c Release --no-build
+dotnet publish src/Sorel/Sorel.csproj -c Release -r win-x64 --self-contained true -o release/Sorel
 ```
 
 For UI changes, launch the Release build and exercise Launch, Library, Diagnostics, Settings, language switching, window controls, and the notification-area menu.

@@ -7,5 +7,5 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  <ItemGroup><ProjectReference Include="../../src/Moonrise/Moonrise.csproj" /></ItemGroup>
+  <ItemGroup><ProjectReference Include="../../src/Sorel/Sorel.csproj" /></ItemGroup>
 </Project>

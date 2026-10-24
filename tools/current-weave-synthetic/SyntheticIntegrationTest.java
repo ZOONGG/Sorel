@@ -1,4 +1,4 @@
-package dev.moonrise.current;
+package dev.sorel.current;
 import java.net.*;
 import java.nio.file.*;
 import java.util.*;
@@ -83,13 +83,13 @@ public final class SyntheticIntegrationTest {
             SyntheticIntegrationTest.class.getClassLoader(), gameLoaderName, adapted);
         var node = new ClassNode(); new ClassReader(adapted).accept(node, 0);
         for (var method : node.methods) for (var insn : method.instructions)
-            if (insn instanceof LdcInsnNode constant && "dev.moonrise.current.SyntheticResolver".equals(constant.cst))
-                constant.cst = "dev.moonrise.current.SyntheticFixture";
+            if (insn instanceof LdcInsnNode constant && "dev.sorel.current.SyntheticResolver".equals(constant.cst))
+                constant.cst = "dev.sorel.current.SyntheticFixture";
         var writer = new ClassWriter(0); node.accept(writer);
         var holder = new ClassLoader(SyntheticIntegrationTest.class.getClassLoader()) {
             Class<?> define(byte[] b) { return defineClass(null, b, 0, b.length); }
             protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-                if (name.equals("dev.moonrise.current.SyntheticResolver") || name.equals("dev.moonrise.current.SyntheticFixture"))
+                if (name.equals("dev.sorel.current.SyntheticResolver") || name.equals("dev.sorel.current.SyntheticFixture"))
                     throw new ClassNotFoundException("Genesis defining loader deliberately cannot see adapter helper: " + name);
                 return super.loadClass(name, resolve);
             }
@@ -110,12 +110,12 @@ public final class SyntheticIntegrationTest {
         var pipeline = pipelineConstructor.newInstance(List.of(stage), null, SyntheticIntegrationTest.class.getClassLoader());
         var game = (URLClassLoader)loaderType.getConstructor(URL[].class, pipelineType).newInstance(new URL[]{SyntheticIntegrationTest.class.getProtectionDomain().getCodeSource().getLocation()}, pipeline);
         loaderType.getMethod(exclusionsSetter, Set.class).invoke(game,
-            Set.of("dev.moonrise.current.SyntheticResolver", "dev.moonrise.current.SyntheticFixture", "net.weavemc.loader.impl.shaded.spongepowered.asm.mixin.injection.invoke.arg.Args",
+            Set.of("dev.sorel.current.SyntheticResolver", "dev.sorel.current.SyntheticFixture", "net.weavemc.loader.impl.shaded.spongepowered.asm.mixin.injection.invoke.arg.Args",
                 "net.weavemc.loader.impl.shaded.spongepowered.asm.mixin.injection.invoke.arg.ArgumentCountException",
                 "net.weavemc.loader.impl.shaded.spongepowered.asm.mixin.injection.invoke.arg.ArgumentIndexOutOfBoundsException"));
-        var resolver = Class.forName("dev.moonrise.current.SyntheticResolver", false, game);
+        var resolver = Class.forName("dev.sorel.current.SyntheticResolver", false, game);
         if (resolver.getClassLoader() != game) throw new AssertionError("Resolver must belong to game loader");
-        var provider = Class.forName("dev.moonrise.current.SyntheticFixture", false, game);
+        var provider = Class.forName("dev.sorel.current.SyntheticFixture", false, game);
         if (provider.getClassLoader() != game) throw new AssertionError("Fixture must belong to game loader");
         provider.getField("generated").set(null, generated);
         provider.getField("generatedName").set(null, generatedName);

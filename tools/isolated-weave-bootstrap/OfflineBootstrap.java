@@ -21,7 +21,7 @@ public final class OfflineBootstrap {
     public static void main(String[] args) throws Exception {
         Path root = Path.of(args[0]).toRealPath();
         Path raven = Path.of(args[1]), bwh = Path.of(args[2]);
-        System.setProperty("moonrise.proof.raven", raven.toString());
+        System.setProperty("sorel.proof.raven", raven.toString());
         System.setSecurityManager(new SecurityManager() {
             public void checkPermission(Permission permission) {
                 if (permission.getName().equals("setSecurityManager")) throw new SecurityException("Guard removal denied");
@@ -94,7 +94,7 @@ public final class OfflineBootstrap {
             OfflineLegacyCommand.verify(owner);
             // SafeTransformer exits the JVM on the unchanged BWH blocker, bypassing finally.
             // Read the real registry during shutdown; never replay Raven preInit/register.
-            if (!Boolean.getBoolean("moonrise.proof.traceMixinBytesOnly"))
+            if (!Boolean.getBoolean("sorel.proof.traceMixinBytesOnly"))
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     try { OfflineLegacyCommand.verifyRegistration(); }
                     catch (Throwable error) { error.printStackTrace(System.out); }

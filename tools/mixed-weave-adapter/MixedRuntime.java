@@ -1,4 +1,4 @@
-package dev.moonrise.mixed;
+package dev.sorel.mixed;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -19,7 +19,7 @@ public final class MixedRuntime {
         byte[] original;
         try (var input = jar.getInputStream(entry)) { original = input.readAllBytes(); }
         Properties selection = new Properties();
-        try (var config = MixedRuntime.class.getResourceAsStream("/moonrise-mixed/selection.properties")) {
+        try (var config = MixedRuntime.class.getResourceAsStream("/sorel-mixed/selection.properties")) {
             if (config == null) return legacyExperimentMetadata(jar, original);
             selection.load(config);
         }
@@ -28,19 +28,19 @@ public final class MixedRuntime {
             if (!Arrays.equals(original, expected)) continue;
             validateArchive(jar, selection.getProperty(i + ".hash"));
             initializeRelocation(jar);
-            System.out.println("[Moonrise mixed] verified legacy metadata adapted in memory: " + selection.getProperty(i + ".hash"));
+            System.out.println("[Sorel mixed] verified legacy metadata adapted in memory: " + selection.getProperty(i + ".hash"));
             return new ByteArrayInputStream(Base64.getDecoder().decode(selection.getProperty(i + ".current")));
         }
         return new ByteArrayInputStream(original);
     }
     private static InputStream legacyExperimentMetadata(JarFile jar, byte[] original) throws Exception {
         byte[] expected;
-        try (var input = MixedRuntime.class.getResourceAsStream("/moonrise-mixed/raven-original.json")) { expected = input.readAllBytes(); }
+        try (var input = MixedRuntime.class.getResourceAsStream("/sorel-mixed/raven-original.json")) { expected = input.readAllBytes(); }
         if (!Arrays.equals(original, expected)) return new ByteArrayInputStream(original);
         validateArchive(jar, RAVEN);
         initializeRelocation(jar);
-        System.out.println("[Moonrise mixed] original legacy metadata adapted in memory; known injector findings preserved");
-        return MixedRuntime.class.getResourceAsStream("/moonrise-mixed/raven-current.json");
+        System.out.println("[Sorel mixed] original legacy metadata adapted in memory; known injector findings preserved");
+        return MixedRuntime.class.getResourceAsStream("/sorel-mixed/raven-current.json");
     }
     private static void validateArchive(JarFile jar, String hash) throws Exception {
         Path archive = Path.of(jar.getName()).toRealPath();
@@ -80,16 +80,16 @@ public final class MixedRuntime {
             if (!runtimeName.equals("a")) throw new IllegalStateException("Observed renderer mapping changed: " + runtimeName);
             result = info.getClass().getMethod("findMethod", String.class, String.class, int.class)
                 .invoke(info, runtimeName, desc, flags);
-            if (result != null) System.out.println("[Moonrise mixed] resolved existing renderer LVT metadata via actual Weave mapping: " + name + " -> " + runtimeName);
+            if (result != null) System.out.println("[Sorel mixed] resolved existing renderer LVT metadata via actual Weave mapping: " + name + " -> " + runtimeName);
         }
         if (result == null) {
-            System.err.println("[Moonrise mixed] missing LVT metadata target=" + node.getClass().getField("name").get(node)
+            System.err.println("[Sorel mixed] missing LVT metadata target=" + node.getClass().getField("name").get(node)
                 + " method=" + method.getClass().getField("name").get(method) + method.getClass().getField("desc").get(method)
                 + " flags=" + flags);
             var methods = info.getClass().getDeclaredField("methods"); methods.setAccessible(true);
             for (Object cached : (Iterable<?>) methods.get(info)) {
                 var type = cached.getClass();
-                System.err.println("[Moonrise mixed] cached method=" + type.getMethod("getName").invoke(cached)
+                System.err.println("[Sorel mixed] cached method=" + type.getMethod("getName").invoke(cached)
                     + type.getMethod("getDesc").invoke(cached));
             }
         }

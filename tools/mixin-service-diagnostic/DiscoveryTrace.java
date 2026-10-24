@@ -1,4 +1,4 @@
-package dev.moonrise.diagnostic;
+package dev.sorel.diagnostic;
 
 import java.io.*;
 import java.lang.instrument.*;

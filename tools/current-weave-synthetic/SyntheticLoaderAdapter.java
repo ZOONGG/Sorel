@@ -1,4 +1,4 @@
-package dev.moonrise.current;
+package dev.sorel.current;
 import java.lang.instrument.*;
 import java.net.*;
 import java.security.*;
@@ -18,7 +18,7 @@ public final class SyntheticLoaderAdapter implements ClassFileTransformer {
         try {
             if (isGameLoader(name)) {
                 var result = adapt(bytes);
-                System.err.println("[Moonrise current] synthetic class loading bridge installed");
+                System.err.println("[Sorel current] synthetic class loading bridge installed");
                 return result;
             }
             if ("net/weavemc/loader/impl/WeaveLoader".equals(name) && loader != null && isGameLoader(loader.getClass().getName().replace('.', '/'))) {
@@ -37,7 +37,7 @@ public final class SyntheticLoaderAdapter implements ClassFileTransformer {
         try (var stream = SyntheticLoaderAdapter.class.getResourceAsStream("SyntheticLoaderMethods.class")) {
             new ClassReader(stream).accept(template, 0);
         }
-        for (var method : template.methods) if (method.name.startsWith("moonrise$")) {
+        for (var method : template.methods) if (method.name.startsWith("sorel$")) {
             if (target.methods.stream().anyMatch(m -> m.name.equals(method.name))) throw new IllegalStateException("Duplicate synthetic bridge");
             for (var insn : method.instructions) {
                 if (insn instanceof MethodInsnNode call && call.owner.equals(template.name)) call.owner = target.name;
@@ -53,7 +53,7 @@ public final class SyntheticLoaderAdapter implements ClassFileTransformer {
             code.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/String", "startsWith", "(Ljava/lang/String;)Z", false));
             code.add(new JumpInsnNode(Opcodes.IFEQ, original));
             code.add(new VarInsnNode(Opcodes.ALOAD, 0)); code.add(new VarInsnNode(Opcodes.ALOAD, 1)); code.add(new VarInsnNode(Opcodes.ILOAD, 2));
-            code.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, target.name, "moonrise$loadSynthetic", "(Ljava/lang/String;Z)Ljava/lang/Class;", false));
+            code.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, target.name, "sorel$loadSynthetic", "(Ljava/lang/String;Z)Ljava/lang/Class;", false));
             code.add(new InsnNode(Opcodes.ARETURN)); code.add(original); code.add(new FrameNode(Opcodes.F_SAME, 0, null, 0, null));
             method.instructions.insert(code); matches++;
         }

@@ -14,6 +14,6 @@ The inspector can:
 - create and export a draft package manifest;
 - open a prefilled GitHub submission page.
 
-Moonrise does not decompile JARs. Class/package listing is a separate explicit action and returns names only. Drafts default to `sourceOnly`; developers must add an upstream artifact URL and release details before a package becomes installable.
+Sorel does not decompile JARs. Class/package listing is a separate explicit action and returns names only. Drafts default to `sourceOnly`; developers must add an upstream artifact URL and release details before a package becomes installable.
 
 A custom test catalog URL is stored separately from the production URL and is consulted only while developer mode is active. Resetting the catalog cache removes cached metadata, not installed or manually imported packages.

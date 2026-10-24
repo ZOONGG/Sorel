@@ -1,41 +1,30 @@
-name: Installed release update smoke
+name: Sorel stable installed update smoke
 on:
   workflow_dispatch:
-    inputs:
-      feed_mode:
-        type: choice
-        options: [local, github]
-        default: github
-      release_tag:
-        default: v0.1.0-beta.2
-        type: string
 permissions:
-  # GitHub requires push access to read an unpublished draft release.
-  contents: write
+  contents: read
 jobs:
   update:
     runs-on: windows-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 8.0.x
-      - name: Install published beta.1 and apply beta.2
+      - name: Build rebranded native bridge
         shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
-          FEED_MODE: ${{ inputs.feed_mode }}
-          RELEASE_TAG: ${{ inputs.release_tag }}
-        run: ./tools/Test-MoonriseReleaseUpdate.ps1 -FeedMode $env:FEED_MODE -ReleaseTag $env:RELEASE_TAG
-      - name: Preserve update evidence
+        run: ./tools/Build-NativeBridge.ps1 -OutputPath runtime/bridge/Sorel.Native.dll -WorkingRoot artifacts/native-working
+      - name: Build and test isolated Sorel 1.0.0 to local-only 1.0.1
+        shell: pwsh
+        run: ./tools/New-SorelInstalledUpdateSmoke.ps1
+      - uses: actions/upload-artifact@v7
         if: always()
-        uses: actions/upload-artifact@v7
         with:
-          name: installed-update-${{ inputs.feed_mode }}
+          name: sorel-stable-update-evidence
           path: |
-            artifacts/release-update-*/**/*.txt
-            artifacts/release-update-*/**/*.json
-            artifacts/release-update-*/**/*.png
-            artifacts/release-update-*/**/*.log
+            artifacts/stable-update-smoke/**/*.txt
+            artifacts/stable-update-smoke/**/*.json
+            artifacts/stable-update-smoke/**/*.png
+            artifacts/stable-update-smoke/**/*.log
           if-no-files-found: warn

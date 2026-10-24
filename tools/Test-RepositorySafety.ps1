@@ -1,5 +1,5 @@
 param(
-    [string]$PrivatePatterns = $env:MOONRISE_PRIVATE_PATTERNS
+    [string]$PrivatePatterns = $env:SOREL_PRIVATE_PATTERNS
 )
 
 $ErrorActionPreference = "Stop"
@@ -10,10 +10,10 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Unable to enumerate repository files." }
 
     $approvedArtifacts = @{
-        'runtime/main-cosmetics-build/moonrise-cosmetics-1.3.2.jar' = 'EFBAC1DC8F6B28EE1A13E294FF7DC03880C384306F1FFAB88738E3DCD1DC4354'
-        'runtime/mixed-weave-adapter/moonrise-mixed-agent-0.1.0.jar' = 'B1E5408C014486731E24B56EFCD7B32F2219249A17ACCACA9F897270C2EB70E4'
-        'runtime/mixed-weave-adapter/moonrise-mixed-raven-abi-0.1.0.jar' = 'F73CDA328C5538BE38316207C184B3D6734E0A63FEBA0F958E9CE57304C473BC'
-        'runtime/catalog/Veyra-1.0.0-moonrise.2.jar' = '22B8788650D74C8ADDECE463E376FE9700F0084DCB3492F931D0FAD12CC23427'
+        'runtime/main-cosmetics-build/sorel-cosmetics-1.3.2.jar' = 'CC066D1B755C01DB11D2B59E1858F699CED2CA3BEEFA57E113D05D30C6D67A04'
+        'runtime/mixed-weave-adapter/sorel-mixed-agent-0.1.0.jar' = 'C762DCEFC0DD85742567790C29657D2205F6F046EEDFF84CD22463DD2B4215F9'
+        'runtime/mixed-weave-adapter/sorel-mixed-raven-abi-0.1.0.jar' = 'BEF8F65CDED547A4094B2A3727210E90B397661A3288EA584A77128B3F76C0E0'
+        'runtime/catalog/Veyra-1.0.1.jar' = '38927237E09C764D20EE747C9276CB8CAA29EC8CE5A336BD93C2DCAE930C9772'
         'extensions/MixedWeave/Weave-Loader-0.2.6-source.zip' = 'FE9EFB97F292DEB931923094F755D1EF59E8C6696B246CED0A32497648D1F711'
     }
     foreach ($file in $approvedArtifacts.Keys) {
@@ -25,8 +25,8 @@ try {
         $_ -match '^(user-mods|user-agents|profiles|plugins|language-packs|themes|logs|crash-reports|release|artifacts?)(/|$)' -or
         $_ -match '(?i)(^|/)(account|accounts|session|sessions|token|tokens|credential|credentials|settings)(\.[^/]*)?$' -or
         ($_ -match '(?i)\.(jar|pfx|p12|pem|key|snk|log|dmp|mdmp|zip|7z|rar)$' -and
-            $_ -ne 'runtime/adapters/moonrise-bwh-exitlag-network-agent.jar' -and -not $approvedArtifacts.ContainsKey($_)) -or
-        ($_ -match '(?i)\.(exe|dll)$' -and $_ -ne 'runtime/bridge/Moonrise.Native.dll')
+            $_ -ne 'runtime/adapters/sorel-bwh-exitlag-network-agent.jar' -and -not $approvedArtifacts.ContainsKey($_)) -or
+        ($_ -match '(?i)\.(exe|dll)$' -and $_ -ne 'runtime/bridge/Sorel.Native.dll')
     }
     if ($forbidden) {
         $forbidden | ForEach-Object { Write-Error "Forbidden tracked path: $_" }

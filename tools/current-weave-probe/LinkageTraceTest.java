@@ -1,4 +1,4 @@
-package dev.moonrise.diagnostic;
+package dev.sorel.diagnostic;
 import java.lang.instrument.*;
 import java.lang.reflect.*;
 import java.nio.file.*;

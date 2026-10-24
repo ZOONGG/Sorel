@@ -1,10 +1,10 @@
-# Moonrise Theme Packs V1
+# Sorel Theme Packs V1
 
-Moonrise theme packs are appearance data, not plugins. They cannot run code or supply XAML.
+Sorel theme packs are appearance data, not plugins. They cannot run code or supply XAML.
 
 ## Location
 
-Custom themes live in `%LOCALAPPDATA%\Moonrise\themes`. Each theme has its own folder:
+Custom themes live in `%LOCALAPPDATA%\Sorel\themes`. Each theme has its own folder:
 
 ```text
 themes/
@@ -15,11 +15,11 @@ themes/
       background.jpg
 ```
 
-Development/visual-QA runs use the equivalent `themes` directory under their isolated data root. Built-in themes are compiled into Moonrise and never require files in this directory.
+Development/visual-QA runs use the equivalent `themes` directory under their isolated data root. Built-in themes are compiled into Sorel and never require files in this directory.
 
 ## Built-in themes
 
-- `standard` — **Moonrise Standard**, the restored original Moonrise presentation and the default for new settings.
+- `standard` — **Sorel Standard**, the restored original Sorel presentation and the default for new settings.
 - `moonlight` — deeper navy surfaces with violet-blue gradients and soft depth.
 - `ember` — compact graphite surfaces with warm amber controls.
 - `porcelain` — complete light appearance with dark text and strong accessible controls.
@@ -124,7 +124,7 @@ Geometry is clamped to safe bounds: radii 0–28, borders 0–3, spacing 0.75–
 - `scrollbar`: `minimal`, `rounded`, `high-contrast`
 - `density`: `compact`, `comfortable`
 
-These names select Moonrise-owned styling behavior. A theme cannot provide a control template.
+These names select Sorel-owned styling behavior. A theme cannot provide a control template.
 
 ## Backgrounds and assets
 
@@ -136,12 +136,12 @@ Assets must be relative paths inside the theme folder. Absolute paths, drive/UNC
 
 `Create theme template` creates a valid duplicate-safe folder (`my-theme`, `my-theme-2`, and so on) and never overwrites existing files. `Import folder` copies a validated theme directory into the theme root without overwriting an installed id. Archive import is intentionally not part of V1.
 
-While a custom theme is selected, Moonrise watches its `theme.json` and supported images. Saves are debounced by 400 ms, parsed and validated off the UI thread, then applied on the UI thread. A malformed update keeps the previous valid appearance and reports a concise diagnostic. Restoring valid JSON hot reloads normally.
+While a custom theme is selected, Sorel watches its `theme.json` and supported images. Saves are debounced by 400 ms, parsed and validated off the UI thread, then applied on the UI thread. A malformed update keeps the previous valid appearance and reports a concise diagnostic. Restoring valid JSON hot reloads normally.
 
 ## Failure and migration behavior
 
-Invalid JSON, unsupported schemas, unsafe paths, missing assets, and invalid supported values cannot crash startup. The pack is excluded and Moonrise Standard is selected. Persisted legacy values such as `Obsidian` and `Aurora` therefore migrate safely to Moonrise Standard when no matching built-in exists. Only the last successfully applied theme id is persisted.
+Invalid JSON, unsupported schemas, unsafe paths, missing assets, and invalid supported values cannot crash startup. The pack is excluded and Sorel Standard is selected. Persisted legacy values such as `Obsidian` and `Aurora` therefore migrate safely to Sorel Standard when no matching built-in exists. Only the last successfully applied theme id is persisted.
 
 ## Trust model
 
-Theme packs are untrusted input. The loader performs JSON deserialization into fixed data models and maps values to Moonrise-owned WPF resources. It never loads external resource dictionaries, markup extensions, CLR types, C#/DLLs, PowerShell, JavaScript, commands, URLs, or processes, and it makes no network requests.
+Theme packs are untrusted input. The loader performs JSON deserialization into fixed data models and maps values to Sorel-owned WPF resources. It never loads external resource dictionaries, markup extensions, CLR types, C#/DLLs, PowerShell, JavaScript, commands, URLs, or processes, and it makes no network requests.

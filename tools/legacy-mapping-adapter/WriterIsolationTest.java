@@ -8,7 +8,7 @@ public final class WriterIsolationTest {
     public static void main(String[] args) throws Exception {
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         URL genesis = Path.of(args[0]).toUri().toURL();
-        try (var isolated = new URLClassLoader("MoonriseLegacyMapping",
+        try (var isolated = new URLClassLoader("SorelLegacyMapping",
                 new URL[]{Path.of(args[1]).toUri().toURL(), genesis}, ClassLoader.getPlatformClassLoader())) {
             Class<?> api = isolated.loadClass("org.cadixdev.lorenz.io.MappingFormat");
             Class<?> provider = tccl.loadClass("org.cadixdev.lorenz.io.srg.SrgMappingFormat");
@@ -24,7 +24,7 @@ public final class WriterIsolationTest {
                 if (!expected.getMessage().contains("SrgMappingFormat not a subtype")) throw expected;
                 System.out.println("REPRODUCED: "+expected);
             }
-            byte[] bytes = (byte[]) isolated.loadClass("dev.moonrise.mapping.LegacyMappingAdapter")
+            byte[] bytes = (byte[]) isolated.loadClass("dev.sorel.mapping.LegacyMappingAdapter")
                 .getMethod("convert", Path.class).invoke(null, Path.of(args[2]));
             String text = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
             long classes=text.lines().filter(s->s.startsWith("CL: ")).count();
@@ -36,7 +36,7 @@ public final class WriterIsolationTest {
             Object restored = isolated.loadClass("org.cadixdev.lorenz.io.srg.xsrg.XSrgReader")
                 .getConstructor(java.io.Reader.class).newInstance(new java.io.StringReader(text));
             Object set = restored.getClass().getMethod("read").invoke(restored);
-            var semantics = isolated.loadClass("dev.moonrise.mapping.LegacyMappingAdapter")
+            var semantics = isolated.loadClass("dev.sorel.mapping.LegacyMappingAdapter")
                 .getDeclaredMethod("semantics", isolated.loadClass("org.cadixdev.lorenz.MappingSet"));
             semantics.setAccessible(true);
             Set<?> records = (Set<?>) semantics.invoke(null, set);

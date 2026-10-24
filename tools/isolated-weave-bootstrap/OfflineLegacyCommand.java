@@ -60,7 +60,7 @@ public final class OfflineLegacyCommand {
                 Class.forName("net.weavemc.loader.api.command.CommandBus", false, OfflineBootstrap.class.getClassLoader()))
             throw new AssertionError("Raven CommandBus identity differs from backing owner");
         System.out.println("PASS Raven CommandBus identity equals backing Owner");
-        try (var jar = new java.util.jar.JarFile(System.getProperty("moonrise.proof.raven"))) {
+        try (var jar = new java.util.jar.JarFile(System.getProperty("sorel.proof.raven"))) {
             if (!Arrays.equals(bytes, jar.getInputStream(jar.getJarEntry("me/pianopenguin471/RavenWeave.class")).readAllBytes()))
                 throw new AssertionError("Original Raven entrypoint bytes changed");
         }

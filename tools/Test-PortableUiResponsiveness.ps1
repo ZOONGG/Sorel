@@ -4,7 +4,7 @@ $ErrorActionPreference = 'Stop'
 Add-Type -TypeDefinition @'
 using System;
 using System.Runtime.InteropServices;
-public static class MoonriseUiProbe {
+public static class SorelUiProbe {
     [DllImport("user32.dll", SetLastError = true)]
     public static extern IntPtr SendMessageTimeout(IntPtr hwnd, uint msg, UIntPtr wParam,
         IntPtr lParam, uint flags, uint timeout, out UIntPtr result);
@@ -26,7 +26,7 @@ try {
     for ($i = 0; $i -lt 100; $i++) {
         $watch = [Diagnostics.Stopwatch]::StartNew()
         $result = [UIntPtr]::Zero
-        $response = [MoonriseUiProbe]::SendMessageTimeout($handle, 0, [UIntPtr]::Zero,
+        $response = [SorelUiProbe]::SendMessageTimeout($handle, 0, [UIntPtr]::Zero,
             [IntPtr]::Zero, 2, 500, [ref]$result)
         $watch.Stop()
         $samples += [pscustomobject]@{ Milliseconds = $watch.Elapsed.TotalMilliseconds; Responded = $response -ne [IntPtr]::Zero }

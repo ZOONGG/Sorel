@@ -1,6 +1,6 @@
 param(
-    [string]$OutputPath = (Join-Path $PSScriptRoot "..\artifacts\native\Moonrise.Native.dll"),
-    [string]$WorkingRoot = (Join-Path $env:TEMP "moonrise-native-build")
+    [string]$OutputPath = (Join-Path $PSScriptRoot "..\artifacts\native\Sorel.Native.dll"),
+    [string]$WorkingRoot = (Join-Path $PSScriptRoot "../artifacts/native-working")
 )
 
 $ErrorActionPreference = "Stop"
@@ -8,9 +8,9 @@ Set-StrictMode -Version Latest
 
 $minHookCommit = "c3fcafdc10146beb5919319d0683e44e3c30d537"
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
-$bridgeSource = Join-Path $repoRoot "native\Moonrise.Native\bridge.c"
+$bridgeSource = Join-Path $repoRoot "native\Sorel.Native\bridge.c"
 if (-not (Test-Path -LiteralPath $bridgeSource)) { throw "Native bridge source was not found: $bridgeSource" }
-$bridgeTestSource = Join-Path $repoRoot "native\Moonrise.Native\bridge_tests.c"
+$bridgeTestSource = Join-Path $repoRoot "native\Sorel.Native\bridge_tests.c"
 if (-not (Test-Path -LiteralPath $bridgeTestSource)) { throw "Native bridge tests were not found: $bridgeTestSource" }
 
 $programFilesX86 = [Environment]::GetFolderPath("ProgramFilesX86")
@@ -24,6 +24,7 @@ $vcvars = Join-Path $installationPath "VC\Auxiliary\Build\vcvars64.bat"
 if (-not (Test-Path -LiteralPath $vcvars)) { throw "vcvars64.bat was not found: $vcvars" }
 
 $working = [System.IO.Path]::GetFullPath($WorkingRoot)
+if (-not $working.StartsWith($repoRoot.TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) { throw "WorkingRoot must stay inside the repository." }
 $minHook = Join-Path $working "minhook"
 $obj = Join-Path $working "obj"
 $testObj = Join-Path $obj "tests"
@@ -54,11 +55,11 @@ foreach ($source in $sources) {
 $includeRoot = Join-Path $minHook "include"
 $includeSrc = Join-Path $minHook "src"
 $includeHde = Join-Path $minHook "src\hde"
-$pdb = Join-Path $obj "Moonrise.Native.pdb"
+$pdb = Join-Path $obj "Sorel.Native.pdb"
 $headersPath = Join-Path $working "headers.txt"
 $cmdFile = Join-Path $working "build-native.cmd"
-$testExecutable = Join-Path $working "Moonrise.Native.Tests.exe"
-$reproducibilityBaseline = Join-Path $working "Moonrise.Native.first.dll"
+$testExecutable = Join-Path $working "Sorel.Native.Tests.exe"
+$reproducibilityBaseline = Join-Path $working "Sorel.Native.first.dll"
 $quotedSources = ($sources | ForEach-Object { '"' + $_ + '"' }) -join " "
 $quotedTestSources = (@($bridgeTestSource) + $sources[1..($sources.Count - 1)] |
     ForEach-Object { '"' + $_ + '"' }) -join " "
@@ -82,7 +83,7 @@ $commands = @(
 )
 Set-Content -LiteralPath $cmdFile -Value $commands -Encoding ASCII
 
-Write-Output "[native] Building x64 Moonrise.Native.dll"
+Write-Output "[native] Building x64 Sorel.Native.dll"
 & cmd.exe /d /c $cmdFile
 if ($LASTEXITCODE -ne 0) { throw "Native bridge build failed with exit code $LASTEXITCODE." }
 if (-not (Test-Path -LiteralPath $out)) { throw "Native bridge build did not produce $out." }

@@ -1,4 +1,4 @@
-package dev.moonrise.current;
+package dev.sorel.current;
 import java.util.*;
 import net.weavemc.loader.impl.WeaveLoader;
 import net.weavemc.loader.impl.mixin.*;
@@ -49,7 +49,7 @@ public final class SyntheticResolver {
             bytes = remap.apply(namespace, bytes);
             if (!new ClassReader(bytes).getClassName().equals(name.replace('.', '/')))
                 throw new IllegalStateException("Generated synthetic class name mismatch");
-            System.err.println("[Moonrise current] synthetic-generated name=" + name + " namespace=" + namespace);
+            System.err.println("[Sorel current] synthetic-generated name=" + name + " namespace=" + namespace);
             return bytes;
     }
     static byte[] generateOwned(SandboxedMixinState state, String name) {

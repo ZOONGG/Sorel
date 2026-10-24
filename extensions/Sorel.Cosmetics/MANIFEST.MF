@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Premain-Class: sorel.cosmetics.CosmeticsAgent
+Implementation-Title: Sorel Cosmetics
+Implementation-Version: 1.3.2
+Can-Redefine-Classes: false
+Can-Retransform-Classes: false
+Sorel-Clients: lunar

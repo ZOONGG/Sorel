@@ -1,24 +1,24 @@
 param([switch]$CheckOnly, [switch]$PrepareOnly, [switch]$RestoreOnly)
 $ErrorActionPreference = 'Stop'
 $appRoot = Split-Path $PSScriptRoot -Parent
-$dataRoot = Join-Path $env:LOCALAPPDATA 'Moonrise/dev'
-$binaryDirectory = Join-Path $appRoot 'runtime/bwh-normal-validation/bin/Moonrise/release_win-x64'
-$executable = Join-Path $binaryDirectory 'Moonrise.exe'
-$bridge = Join-Path $appRoot 'runtime/mapping-startup-build/Moonrise.Native.dll'
+$dataRoot = Join-Path $env:LOCALAPPDATA 'Sorel/dev'
+$binaryDirectory = Join-Path $appRoot 'runtime/bwh-normal-validation/bin/Sorel/release_win-x64'
+$executable = Join-Path $binaryDirectory 'Sorel.exe'
+$bridge = Join-Path $appRoot 'runtime/mapping-startup-build/Sorel.Native.dll'
 $indexPath = Join-Path $dataRoot 'packages/metadata/index.json'
-$settingsPath = Join-Path $dataRoot 'settings/moonrise-settings.json'
+$settingsPath = Join-Path $dataRoot 'settings/sorel-settings.json'
 $pendingPath = Join-Path $dataRoot 'logs/combined-weave-smoke.pending.txt'
 $veyraExpected = '779760392BCA1F269D0EB325E78950249D355E94A09C90988108C3CCD94D95BD'
 $expected = '6DA5B2A67E05E07DEAE2779B4AA3D1B70E5028DED227C41487FF783F5D609A57'
 function Restore-Selection([string]$directory) {
-    if (Get-Process Moonrise -ErrorAction SilentlyContinue) { throw 'Close Moonrise before restoring selections.' }
+    if (Get-Process Sorel -ErrorAction SilentlyContinue) { throw 'Close Sorel before restoring selections.' }
     [IO.File]::WriteAllBytes($indexPath, [IO.File]::ReadAllBytes((Join-Path $directory 'package-index.before.json')))
-    [IO.File]::WriteAllBytes($settingsPath, [IO.File]::ReadAllBytes((Join-Path $directory 'moonrise-settings.before.json')))
+    [IO.File]::WriteAllBytes($settingsPath, [IO.File]::ReadAllBytes((Join-Path $directory 'sorel-settings.before.json')))
     Remove-Item -LiteralPath $pendingPath
 }
 if ($RestoreOnly) {
     Restore-Selection ([IO.File]::ReadAllText($pendingPath).Trim())
-    Write-Host 'Original Moonrise selections restored.'
+    Write-Host 'Original Sorel selections restored.'
     return
 }
 foreach ($path in @($executable, $bridge)) {
@@ -33,8 +33,8 @@ $index = [Text.Encoding]::UTF8.GetString($indexBefore) | ConvertFrom-Json
 $settings = [Text.Encoding]::UTF8.GetString($settingsBefore) | ConvertFrom-Json
 $selected = @($index.Packages | Where-Object { $_.Kind -eq 0 -and ($_.Sha256 -eq $expected -or $_.Sha256 -eq $veyraExpected) })
 if ($selected.Count -ne 2) { throw 'Expected original Veyra and baseline BWH, exactly once each.' }
-[void][Reflection.Assembly]::LoadFrom((Join-Path $binaryDirectory 'Moonrise.dll'))
-$parser = [Moonrise.Services.JarMetadataParser]::new()
+[void][Reflection.Assembly]::LoadFrom((Join-Path $binaryDirectory 'Sorel.dll'))
+$parser = [Sorel.Services.JarMetadataParser]::new()
 $contracts = @()
 $modList = @()
 $jarEntries = @()
@@ -42,11 +42,11 @@ $metadata = @()
 foreach ($package in $selected) {
     $path = Join-Path $dataRoot $package.ManagedFilePath
     if ((Get-FileHash -LiteralPath $path).Hash -ne $package.Sha256) { throw 'Original integrity failure.' }
-    $contract = [Moonrise.Compatibility.PackageInspector]::Inspect($path)
+    $contract = [Sorel.Compatibility.PackageInspector]::Inspect($path)
     if ($contract.Requirements.WeaveGeneration.ToString() -ne 'Current' -or $contract.Requirements.StartupAgent -or
         @($contract.Issues | Where-Object { $_.Severity.ToString() -eq 'Error' }).Count) { throw 'Current contract validation failed.' }
     $mod = $parser.ParseWeaveMod($path)
-    if ([Moonrise.Services.WeaveModApiInspector]::new().Inspect($mod).Generation.ToString() -ne 'Current') { throw 'Loader generation mismatch.' }
+    if ([Sorel.Services.WeaveModApiInspector]::new().Inspect($mod).Generation.ToString() -ne 'Current') { throw 'Loader generation mismatch.' }
     $contracts += $contract
     $modList += $mod
     $zip = [IO.Compression.ZipFile]::OpenRead($path)
@@ -69,8 +69,8 @@ $declaredConflicts = @($modList | Where-Object { @($_.Conflicts | Where-Object {
 if ($duplicateClasses.Count -or $duplicateConfigs.Count -or $declaredConflicts.Count) { throw 'Combined package collision; review original metadata/classes.' }
 Write-Host 'Both Current contracts OK; mcp-named; distinct classes and Mixin config names; no declared mutual conflict.'
 if ($CheckOnly) { return }
-if (Get-Process Moonrise -ErrorAction SilentlyContinue) { throw 'Close Moonrise before preparing or starting the smoke.' }
-foreach ($name in @('JAVA_TOOL_OPTIONS','_JAVA_OPTIONS','JDK_JAVA_OPTIONS','MOONRISE_MIXIN_DIAGNOSTIC_AGENT','MOONRISE_MIXIN_DIAGNOSTIC_OPTIONS','MOONRISE_CURRENT_LINKAGE_AGENT')) {
+if (Get-Process Sorel -ErrorAction SilentlyContinue) { throw 'Close Sorel before preparing or starting the smoke.' }
+foreach ($name in @('JAVA_TOOL_OPTIONS','_JAVA_OPTIONS','JDK_JAVA_OPTIONS','SOREL_MIXIN_DIAGNOSTIC_AGENT','SOREL_MIXIN_DIAGNOSTIC_OPTIONS','SOREL_CURRENT_LINKAGE_AGENT')) {
     if ([Environment]::GetEnvironmentVariable($name)) { throw "Clear $name before this smoke." }
 }
 $utf8 = [Text.UTF8Encoding]::new($false)
@@ -86,24 +86,24 @@ if (Test-Path -LiteralPath $pendingPath) {
     $evidence = Join-Path $dataRoot ('logs/combined-weave-smoke-' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $evidence | Out-Null
     [IO.File]::WriteAllBytes((Join-Path $evidence 'package-index.before.json'), $indexBefore)
-    [IO.File]::WriteAllBytes((Join-Path $evidence 'moonrise-settings.before.json'), $settingsBefore)
+    [IO.File]::WriteAllBytes((Join-Path $evidence 'sorel-settings.before.json'), $settingsBefore)
     # Save the recovery pointer before any settings mutation.
     [IO.File]::WriteAllText($pendingPath, $evidence, $utf8)
     try {
-        Copy-Item -LiteralPath $bridge -Destination (Join-Path $evidence 'Moonrise.Native.dll')
+        Copy-Item -LiteralPath $bridge -Destination (Join-Path $evidence 'Sorel.Native.dll')
         $contracts | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath (Join-Path $evidence 'combined-inspection.json') -Encoding utf8
-        $paths = [Moonrise.Infrastructure.AppPaths]::new($dataRoot, $appRoot, [Moonrise.Infrastructure.AppMode]::Development)
-        $resolution = [Moonrise.Services.MaintainedCompatibilityBuildService]::new($paths, $parser).Resolve('1.8.9', [Moonrise.Models.PackageInfo[]]$modList)
+        $paths = [Sorel.Infrastructure.AppPaths]::new($dataRoot, $appRoot, [Sorel.Infrastructure.AppMode]::Development)
+        $resolution = [Sorel.Services.MaintainedCompatibilityBuildService]::new($paths, $parser).Resolve('1.8.9', [Sorel.Models.PackageInfo[]]$modList)
         if ($resolution.AppliedBuilds.Count) { throw 'Selected imported BWH unexpectedly needs another maintained build.' }
-        $network = [Moonrise.Services.BwhNetworkAgentDeploymentService]::new($paths).Ensure()
-        $plan = [Moonrise.Services.CurrentLaunchPlanFactory]::new().Create([Moonrise.Models.PackageInfo[]]$modList, [Moonrise.Models.PackageInfo[]]@(), $loader, $false, $null, $network)
+        $network = [Sorel.Services.BwhNetworkAgentDeploymentService]::new($paths).Ensure()
+        $plan = [Sorel.Services.CurrentLaunchPlanFactory]::new().Create([Sorel.Models.PackageInfo[]]$modList, [Sorel.Models.PackageInfo[]]@(), $loader, $false, $null, $network)
         # Exercise normal preparation and MNR4 serialization offline, without starting any process.
         $offline = Join-Path $dataRoot ('temp/combined-offline-' + [guid]::NewGuid().ToString('N'))
         New-Item -ItemType Directory -Path $offline | Out-Null
         try {
-            $mods = [Moonrise.Services.EnabledModDirectoryService]::new($parser).Create($offline, [Moonrise.Models.PackageInfo[]]$modList)
-            $plan = [Moonrise.Services.CurrentWeaveSyntheticAdapter]::Prepare($plan, $offline)
-            $config = [Moonrise.Services.NativeBridgeConfigurationBuilder]::BuildLaunchPlan($plan, $mods)
+            $mods = [Sorel.Services.EnabledModDirectoryService]::new($parser).Create($offline, [Sorel.Models.PackageInfo[]]$modList)
+            $plan = [Sorel.Services.CurrentWeaveSyntheticAdapter]::Prepare($plan, $offline)
+            $config = [Sorel.Services.NativeBridgeConfigurationBuilder]::BuildLaunchPlan($plan, $mods)
             [IO.File]::WriteAllText((Join-Path $evidence 'offline-mnr4.txt'), $config, $utf8)
             $staged = @(Get-ChildItem -LiteralPath $mods -Filter '*.jar')
             if ($staged.Count -ne 2) { throw 'Expected exactly two staged JARs.' }
@@ -138,16 +138,16 @@ if (Test-Path -LiteralPath $pendingPath) {
 }
 Write-Host "Prepared original Veyra + baseline BWH via normal OfficialLunar. Evidence: $evidence"
 if ($PrepareOnly) { return }
-$previous = [Environment]::GetEnvironmentVariable('MOONRISE_DEV_STARTUP_CAPTURE')
+$previous = [Environment]::GetEnvironmentVariable('SOREL_DEV_STARTUP_CAPTURE')
 $game = $null
 $runStarted = [DateTime]::UtcNow
 $result = [ordered]@{ JvmState='not-observed'; JvmExitCode=$null; Runtime='requires-user-and-log-review' }
 try {
-    $env:MOONRISE_DEV_STARTUP_CAPTURE = $evidence
+    $env:SOREL_DEV_STARTUP_CAPTURE = $evidence
     # This flag only enables the existing output capture; normal launch selection is unchanged.
-    $moonrise = Start-Process -FilePath $executable -ArgumentList '--dev-jvm-startup-diagnostic' -WorkingDirectory $evidence -WindowStyle Hidden -PassThru
-    Write-Host 'Click Launch manually in Moonrise. After testing close Minecraft normally, then exit Moonrise (including its tray icon). Keep this console open.'
-    while (-not $moonrise.HasExited) {
+    $sorel = Start-Process -FilePath $executable -ArgumentList '--dev-jvm-startup-diagnostic' -WorkingDirectory $evidence -WindowStyle Hidden -PassThru
+    Write-Host 'Click Launch manually in Sorel. After testing close Minecraft normally, then exit Sorel (including its tray icon). Keep this console open.'
+    while (-not $sorel.HasExited) {
         if (-not $game -and $result.JvmState -eq 'not-observed') {
             $capture = Get-ChildItem -LiteralPath $evidence -Filter 'jvm-*-stdout.log' | Select-Object -First 1
             if ($capture) {
@@ -160,15 +160,15 @@ try {
         Start-Sleep -Milliseconds 200
     }
 } finally {
-    [Environment]::SetEnvironmentVariable('MOONRISE_DEV_STARTUP_CAPTURE', $previous)
+    [Environment]::SetEnvironmentVariable('SOREL_DEV_STARTUP_CAPTURE', $previous)
     if ($game -and $game.HasExited) { $result.JvmState='exited'; $result.JvmExitCode=$game.ExitCode }
     $result.PackageHashesAfter = @($modList | ForEach-Object { @{ Path=$_.FullPath; Sha256=(Get-FileHash -LiteralPath $_.FullPath).Hash } })
     $result | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $evidence 'result.json') -Encoding utf8
-    # These reports are sanitized by Moonrise; never collect official launcher/account files.
+    # These reports are sanitized by Sorel; never collect official launcher/account files.
     Get-ChildItem -LiteralPath (Join-Path $dataRoot 'logs') -Filter 'launch-*.json' -File |
         Where-Object { $_.LastWriteTimeUtc -ge $runStarted } |
         ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $evidence $_.Name) }
-    if (-not (Get-Process Moonrise -ErrorAction SilentlyContinue)) { Restore-Selection $evidence }
-    else { Write-Host 'Moonrise still open: close it, then run this script with -RestoreOnly.' }
+    if (-not (Get-Process Sorel -ErrorAction SilentlyContinue)) { Restore-Selection $evidence }
+    else { Write-Host 'Sorel still open: close it, then run this script with -RestoreOnly.' }
     Write-Host "Evidence retained: $evidence"
 }

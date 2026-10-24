@@ -10,9 +10,9 @@
       "name": "Neutral Weave Demo",
       "summary": "Metadata-only sample entry for local catalog development.",
       "description": "This entry has no bundled or downloadable JAR.",
-      "authors": [{ "name": "Moonrise contributors" }],
-      "repository": "https://github.com/ZOONGG/Moonrise",
-      "license": { "name": "MIT", "url": "https://github.com/ZOONGG/Moonrise/blob/main/LICENSE" },
+      "authors": [{ "name": "Sorel contributors" }],
+      "repository": "https://github.com/ZOONGG/Sorel",
+      "license": { "name": "MIT", "url": "https://github.com/ZOONGG/Sorel/blob/main/LICENSE" },
       "tags": ["demo"],
       "supportedMinecraftVersions": ["1.8.9"],
       "supportedClientVersions": [],
@@ -29,7 +29,7 @@
           "changelog": "Local schema example.",
           "artifact": {
             "downloadMode": "sourceOnly",
-            "upstreamReleaseUrl": "https://github.com/ZOONGG/Moonrise",
+            "upstreamReleaseUrl": "https://github.com/ZOONGG/Sorel",
             "fileName": null,
             "fileSize": null,
             "sha256": null,
@@ -42,7 +42,7 @@
       "dependencies": [],
       "conflicts": [],
       "warnings": [],
-      "statistics": { "downloads": null, "moonriseInstalls": 0 }
+      "statistics": { "downloads": null, "sorelInstalls": 0 }
     }
   ]
 }

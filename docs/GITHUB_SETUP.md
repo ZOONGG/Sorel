@@ -1,6 +1,6 @@
 # GitHub repository setup
 
-Use these settings for `ZOONGG/Moonrise`.
+Use these settings for `ZOONGG/Sorel`.
 
 ## General
 
@@ -10,7 +10,7 @@ Set the repository description to:
 
 Keep **Website** empty until a real project site or documentation URL exists.
 
-Under **Social preview**, upload `docs/images/moonrise-social-preview.png`.
+Under **Social preview**, upload `docs/images/sorel-social-preview.png`.
 
 Under **Social preview / Features**, ensure **Releases** is visible on the repository home page. Leave **Packages** disabled unless the project begins publishing a useful package.
 

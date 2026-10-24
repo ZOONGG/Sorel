@@ -1,0 +1,17 @@
+<Application x:Class="Sorel.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/SorelColors.xaml"/>
+                <ResourceDictionary Source="Themes/Palettes/Moonlight.xaml"/>
+                <ResourceDictionary Source="Themes/SorelTypography.xaml"/>
+                <ResourceDictionary Source="Themes/SorelSpacing.xaml"/>
+                <ResourceDictionary Source="Themes/SorelIcons.xaml"/>
+                <ResourceDictionary Source="Themes/SorelAnimations.xaml"/>
+                <ResourceDictionary Source="Themes/SorelControls.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

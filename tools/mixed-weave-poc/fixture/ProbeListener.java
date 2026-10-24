@@ -7,7 +7,7 @@ public final class ProbeListener {
     public String argument;
     @SubscribeEvent public void onChat(ChatSentEvent event) { calls++; }
     public void registerCommand() {
-        CommandBus.register(new Command("moonriseproof") {
+        CommandBus.register(new Command("sorelproof") {
             @Override public void handle(String[] args) { argument = args[0]; }
         });
     }

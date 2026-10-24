@@ -53,7 +53,7 @@ public final class RoutingProof {
         Object sent = sentType.getConstructor(String.class).newInstance("ordinary");
         trace.clear(); net.weavemc.api.event.EventBus.postEvent((net.weavemc.api.event.Event) sent);
         check(trace.equals(List.of("owner")) && (Boolean) sentType.getMethod("isCancelled").invoke(sent), "Current cancellation set returned");
-        Object command = sentType.getConstructor(String.class).newInstance("/moonriseproof beta");
+        Object command = sentType.getConstructor(String.class).newInstance("/sorelproof beta");
         net.weavemc.api.event.EventBus.postEvent((net.weavemc.api.event.Event) command);
         check((Boolean) sentType.getMethod("isCancelled").invoke(command), "Current legacy command cancellation");
         EventBus.unsubscribe(owner); trace.clear(); EventBus.callEvent(new ChatSentEvent("custom"));

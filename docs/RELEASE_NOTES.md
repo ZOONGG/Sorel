@@ -1,9 +1,13 @@
-# Moonrise 0.1.0-beta.2
+# Sorel v1.0.0 — First Release
 
-- Bundles Veyra 1.0.0-moonrise.2 with Timer exactly matching GitHub main; local Freeze experiments are excluded. Catalog metadata pins the published SHA-256.
-- Supports the newly offline-verified Genesis runtime 26fe6dd9d4a6c3630aca96c22faf52ed6d6fa4f772d23258e1e91f8289abb0ef through a separate synthetic adapter; original JARs remain unchanged.
-- Fixes approved prelaunch closure of user-started Lunar after restarting Moonrise. Automatic post-game cleanup still requires process ownership. Active-game guards and no-force policy remain.
-- Keeps Velopack 1.2.161, Moonrise.App and beta channel. Correct releases.beta.json and matching full package support updates from installed beta.1. Auto Download stages the package; restart remains guarded.
-- Retains Cosmetics 1.3.2, Mixed Weave Adapter, user packages and settings.
+First independent stable Windows x64 release of Sorel.
 
-Use the installed application's updater. Setup is for new installations; ZIP builds do not support integrated updates. Minecraft/server runtime was not tested. Existing credits, upstream notices and distribution permissions remain.
+- Sorel application, installer, tray, diagnostics, localizations and branding.
+- Separate Sorel.App identity and %LOCALAPPDATA%\Sorel storage. Existing Moonrise installations and data are not migrated or modified.
+- Sorel Cosmetics 1.3.2 and Veyra 1.0.1, each bundled with its verified SHA-256.
+- Veyra Timer exactly matches the GitHub baseline; local Freeze experiments are excluded.
+- Verified Genesis synthetic adapter and approved prelaunch Lunar closure fix.
+- Velopack 1.2.161 stable channel, automatic checks/downloads and guarded restart for future Sorel updates.
+- Existing Weave, Mixed Adapter, library, settings and launch lifecycle retained.
+
+Install with Sorel.App-stable-Setup.exe. Portable ZIP does not support integrated updates. No Minecraft or server was automatically launched. Original third-party licenses and attribution are preserved.

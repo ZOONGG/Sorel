@@ -27,14 +27,14 @@ jobs:
       - name: Scan repository safety
         shell: pwsh
         env:
-          MOONRISE_PRIVATE_PATTERNS: ${{ secrets.PRIVATE_NAME_PATTERNS }}
+          SOREL_PRIVATE_PATTERNS: ${{ secrets.PRIVATE_NAME_PATTERNS }}
         run: ./tools/Test-RepositorySafety.ps1
       - name: Restore locked dependencies
-        run: dotnet restore Moonrise.sln --locked-mode
+        run: dotnet restore Sorel.sln --locked-mode
       - name: Build Release
-        run: dotnet build Moonrise.sln -c Release --no-restore
+        run: dotnet build Sorel.sln -c Release --no-restore
       - name: Run all public tests (synthetic files, no Lunar or Minecraft)
-        run: dotnet test Moonrise.sln -c Release --no-build --filter "Category!=PrivateAssets" --logger "trx;LogFileName=public-tests.trx" --results-directory artifacts/test-results
+        run: dotnet test Sorel.sln -c Release --no-build --filter "Category!=PrivateAssets" --logger "trx;LogFileName=public-tests.trx" --results-directory artifacts/test-results
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v7

@@ -1,4 +1,4 @@
-package dev.moonrise.mixed;
+package dev.sorel.mixed;
 
 import java.lang.instrument.*;
 import java.net.URL;
@@ -18,7 +18,7 @@ public final class MixedTransformer implements ClassFileTransformer {
                 if (owner == null || !owner.getClass().getName().equals("com.moonsworth.lunar.genesis.ORCOIHCCICICIHRCCCCHHHRICHHICI"))
                     throw new IllegalStateException("Mixed experiment requires actual Genesis game loader");
                 owner.getClass().getMethod("addURL", URL.class).invoke(owner, self);
-                System.out.println("[Moonrise mixed] adapter added to actual Weave owner");
+                System.out.println("[Sorel mixed] adapter added to actual Weave owner");
             }
             boolean metadata = name.equals("net/weavemc/loader/impl/util/UtilityKt");
             boolean sandbox = name.equals("net/weavemc/loader/impl/mixin/SandboxedMixinLoader");
@@ -32,7 +32,7 @@ public final class MixedTransformer implements ClassFileTransformer {
                         && call.name.equals("findMethod") && call.desc.startsWith("(Lnet/weavemc/loader/impl/shaded/asm/tree/MethodNode;")) {
                         method.instructions.insertBefore(call, new VarInsnNode(Opcodes.ALOAD, 0));
                         String resultType = Type.getReturnType(call.desc).getInternalName();
-                        call.setOpcode(Opcodes.INVOKESTATIC); call.owner = "dev/moonrise/mixed/MixedRuntime";
+                        call.setOpcode(Opcodes.INVOKESTATIC); call.owner = "dev/sorel/mixed/MixedRuntime";
                         call.name = "findMethodDiagnostic";
                         call.desc = "(Ljava/lang/Object;Ljava/lang/Object;ILjava/lang/Object;)Ljava/lang/Object;";
                         method.instructions.insert(call, new TypeInsnNode(Opcodes.CHECKCAST, resultType));
@@ -44,7 +44,7 @@ public final class MixedTransformer implements ClassFileTransformer {
                         if (instruction instanceof MethodInsnNode call && call.getOpcode() == Opcodes.INVOKEVIRTUAL
                             && call.owner.equals("java/util/jar/JarFile") && call.name.equals("getInputStream")
                             && call.desc.equals("(Ljava/util/zip/ZipEntry;)Ljava/io/InputStream;")) {
-                            call.setOpcode(Opcodes.INVOKESTATIC); call.owner = "dev/moonrise/mixed/MixedRuntime";
+                            call.setOpcode(Opcodes.INVOKESTATIC); call.owner = "dev/sorel/mixed/MixedRuntime";
                             call.name = "metadataStream";
                             call.desc = "(Ljava/util/jar/JarFile;Ljava/util/zip/ZipEntry;)Ljava/io/InputStream;"; matches++;
                         }
@@ -52,13 +52,13 @@ public final class MixedTransformer implements ClassFileTransformer {
                 if (sandbox && method.name.equals("getClassBytes$weave_loader") && method.desc.equals("(Ljava/lang/String;)[B"))
                     for (var instruction : method.instructions.toArray()) if (instruction.getOpcode() == Opcodes.ARETURN) {
                         var hook = new InsnList(); hook.add(new VarInsnNode(Opcodes.ALOAD, 1));
-                        hook.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "dev/moonrise/mixed/MixedRuntime", "mixinBytes", "([BLjava/lang/String;)[B", false));
+                        hook.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "dev/sorel/mixed/MixedRuntime", "mixinBytes", "([BLjava/lang/String;)[B", false));
                         method.instructions.insertBefore(instruction, hook); method.maxStack++; matches++;
                     }
             }
             if (matches != (locals ? 2 : 1)) throw new IllegalStateException("Pinned mixed boundary changed: " + name + " matches=" + matches);
             var writer = new ClassWriter(reader, 0); node.accept(writer);
-            System.out.println("[Moonrise mixed] installed " + name); return writer.toByteArray();
+            System.out.println("[Sorel mixed] installed " + name); return writer.toByteArray();
         } catch (Throwable failure) {
             failure.printStackTrace(System.err); Runtime.getRuntime().halt(87); return null;
         }

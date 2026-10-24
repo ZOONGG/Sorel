@@ -1,4 +1,4 @@
-package dev.moonrise.mapping;
+package dev.sorel.mapping;
 import java.io.*;
 import java.net.*;
 import java.nio.file.*;
@@ -104,11 +104,11 @@ public final class LegacyMappingAdapter implements ClassFileTransformer {
             }
             installed=true;
             StartupTrace.stage("genesis-resource-attached-verified");
-            System.err.println("[Moonrise mapping] XSRG FOUND; content verified through actual Genesis loader BEFORE WeaveMixinService construction");
+            System.err.println("[Sorel mapping] XSRG FOUND; content verified through actual Genesis loader BEFORE WeaveMixinService construction");
             return observe(bytes,true);
         } catch(Throwable failure) {
             StartupTrace.failure(failure);
-            System.err.println("[Moonrise mapping] FAIL CLOSED: "+failure); failure.printStackTrace(System.err);
+            System.err.println("[Sorel mapping] FAIL CLOSED: "+failure); failure.printStackTrace(System.err);
             // Instrumentation ignores transformer exceptions. Terminate instead of continuing without the contract.
             Runtime.getRuntime().halt(86);
         }
@@ -131,7 +131,7 @@ public final class LegacyMappingAdapter implements ClassFileTransformer {
     private static InsnList marker(String stage) {
         var code=new InsnList();
         code.add(new FieldInsnNode(Opcodes.GETSTATIC,"java/lang/System","err","Ljava/io/PrintStream;"));
-        code.add(new LdcInsnNode("[Moonrise Weave] "+stage));
+        code.add(new LdcInsnNode("[Sorel Weave] "+stage));
         code.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,"java/io/PrintStream","println","(Ljava/lang/String;)V",false));
         return code;
     }

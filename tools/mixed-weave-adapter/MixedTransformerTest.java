@@ -1,4 +1,4 @@
-package dev.moonrise.mixed;
+package dev.sorel.mixed;
 
 import java.util.Arrays;
 

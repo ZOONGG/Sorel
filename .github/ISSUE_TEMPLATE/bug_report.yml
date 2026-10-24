@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a reproducible Moonrise problem
+description: Report a reproducible Sorel problem
 title: "[Bug]: "
 labels:
   - bug
@@ -7,13 +7,13 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for helping improve Moonrise.
+        Thanks for helping improve Sorel.
 
         **Do not upload account files, tokens, passwords, private mod JARs, personal information, or full unredacted command lines. Sanitize logs and paths before attaching them.**
   - type: input
-    id: moonrise-version
+    id: sorel-version
     attributes:
-      label: Moonrise version
+      label: Sorel version
       placeholder: "For example: v1.0.0"
     validations:
       required: true
@@ -58,7 +58,7 @@ body:
     id: logs
     attributes:
       label: Sanitized diagnostics
-      description: Paste only relevant Moonrise lines after removing usernames, account data, tokens, identifiers, private package names, personal paths, and full command lines.
+      description: Paste only relevant Sorel lines after removing usernames, account data, tokens, identifiers, private package names, personal paths, and full command lines.
       render: text
   - type: checkboxes
     id: safety

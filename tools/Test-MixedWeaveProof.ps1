@@ -1,10 +1,10 @@
 param([string]$JavaHome = 'C:/Program Files/Java/jdk-25.0.3', [switch]$PreparationOnly, [switch]$RequireDiscovery)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
-$current = Join-Path $env:LOCALAPPDATA 'Moonrise/dev/cache/runtime/weave/weave-loader.jar'
-$legacy = Join-Path $env:LOCALAPPDATA 'Moonrise/dev/cache/runtime/weave/weave-loader-0.2.6.jar'
-$raven = Join-Path $env:LOCALAPPDATA 'Moonrise/packages/weave/RavenWeave-1.1.4.jar'
-$bwh = Join-Path $env:LOCALAPPDATA 'Moonrise/adapters/maintained-builds/6da5b2a67e05e07deae2779b4aa3d1b70e5028ded227c41487ff783f5d609a57.jar'
+$current = Join-Path $env:LOCALAPPDATA 'Sorel/dev/cache/runtime/weave/weave-loader.jar'
+$legacy = Join-Path $env:LOCALAPPDATA 'Sorel/dev/cache/runtime/weave/weave-loader-0.2.6.jar'
+$raven = Join-Path $env:LOCALAPPDATA 'Sorel/packages/weave/RavenWeave-1.1.4.jar'
+$bwh = Join-Path $env:LOCALAPPDATA 'Sorel/adapters/maintained-builds/6da5b2a67e05e07deae2779b4aa3d1b70e5028ded227c41487ff783f5d609a57.jar'
 $api = Join-Path $env:USERPROFILE '.weave/.maven-repository/net/weavemc/api/api-v1_8/1.3.4/api-v1_8-1.3.4.jar'
 $output = Join-Path $root 'runtime/mixed-weave-poc/classes'
 New-Item -ItemType Directory -Force -Path $output | Out-Null
@@ -31,5 +31,5 @@ $dependencies = @(
     if (!(Test-Path -LiteralPath $path -PathType Leaf)) { throw "Missing local dependency artifact: $_" }
     $path
 }
-& "$JavaHome/bin/java.exe" -Xverify:all "-Dmoonrise.proof.requireDiscovery=$($RequireDiscovery.IsPresent.ToString().ToLowerInvariant())" -cp "$proofOnly;$current" MixedWeaveProof $current $legacy $raven $output $bwh $api $namedCache $mappings $PreparationOnly.IsPresent @dependencies
+& "$JavaHome/bin/java.exe" -Xverify:all "-Dsorel.proof.requireDiscovery=$($RequireDiscovery.IsPresent.ToString().ToLowerInvariant())" -cp "$proofOnly;$current" MixedWeaveProof $current $legacy $raven $output $bwh $api $namedCache $mappings $PreparationOnly.IsPresent @dependencies
 if ($LASTEXITCODE) { throw 'Offline proof failed' }

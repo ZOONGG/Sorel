@@ -1,4 +1,4 @@
-package dev.moonrise.mapping;
+package dev.sorel.mapping;
 import java.nio.file.*;
 public final class StartupTraceTest {
     public static void main(String[] args) throws Exception {
@@ -11,7 +11,7 @@ public final class StartupTraceTest {
         outer.addSuppressed(new Exception("suppressed failure"));
         StartupTrace.failure(outer);
         StartupTrace.failure(new Exception("accessToken=SECRET"));
-        Path file=Path.of(System.getenv("MOONRISE_DEV_STARTUP_CAPTURE"),"jvm-"+ProcessHandle.current().pid()+"-mapping.log");
+        Path file=Path.of(System.getenv("SOREL_DEV_STARTUP_CAPTURE"),"jvm-"+ProcessHandle.current().pid()+"-mapping.log");
         String text=Files.readString(file);
         for(String marker:new String[]{"premain-enter","launch-config-read-begin","IllegalArgumentException","Caused by:","Suppressed:","root failure","StartupTraceTest.main"})
             if(!text.contains(marker)) throw new AssertionError("missing "+marker);

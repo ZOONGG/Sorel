@@ -9,7 +9,7 @@ $project = Join-Path $PSScriptRoot "IconGenerator\IconGenerator.csproj"
 
 dotnet run --project $project --configuration $Configuration -- $outputDirectory
 if ($LASTEXITCODE -ne 0) {
-    throw "Moonrise brand asset generation failed with exit code $LASTEXITCODE."
+    throw "Sorel brand asset generation failed with exit code $LASTEXITCODE."
 }
 
-Write-Output "Moonrise brand assets are up to date."
+Write-Output "Sorel brand assets are up to date."

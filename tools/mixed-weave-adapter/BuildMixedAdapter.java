@@ -1,4 +1,4 @@
-package dev.moonrise.mixed;
+package dev.sorel.mixed;
 
 import java.nio.file.*;
 import java.security.MessageDigest;
@@ -29,12 +29,12 @@ public final class BuildMixedAdapter {
                 Path target = output.resolve(name); Files.createDirectories(target.getParent()); Files.write(target, writer.toByteArray());
             }
         }
-        Path resources = output.resolve("moonrise-mixed"); Files.createDirectories(resources);
+        Path resources = output.resolve("sorel-mixed"); Files.createDirectories(resources);
         try (var jar = new JarFile(raven.toFile()); var input = jar.getInputStream(jar.getJarEntry("weave.mod.json"))) {
             Files.write(resources.resolve("raven-original.json"), input.readAllBytes());
         }
         Files.writeString(resources.resolve("raven-current.json"), "{\"name\":\"RavenWeave\",\"modId\":\"ravenweave\",\"namespace\":\"mcp-named\",\"compiledFor\":\"1.8.9\",\"entryPoints\":[\"me.pianopenguin471.RavenWeave\"],\"mixinConfigs\":[\"ravenweave.mixins.json\"],\"hooks\":[],\"tweakers\":[],\"accessWideners\":[],\"dependencies\":[]}");
-        Files.writeString(output.resolve("weave.mod.json"), "{\"name\":\"Moonrise Experimental Raven ABI\",\"modId\":\"moonrise-mixed-raven-abi\",\"namespace\":\"mcp-named\",\"compiledFor\":\"1.8.9\",\"entryPoints\":[],\"mixinConfigs\":[],\"hooks\":[],\"tweakers\":[],\"accessWideners\":[],\"dependencies\":[]}");
+        Files.writeString(output.resolve("weave.mod.json"), "{\"name\":\"Sorel Experimental Raven ABI\",\"modId\":\"sorel-mixed-raven-abi\",\"namespace\":\"mcp-named\",\"compiledFor\":\"1.8.9\",\"entryPoints\":[],\"mixinConfigs\":[],\"hooks\":[],\"tweakers\":[],\"accessWideners\":[],\"dependencies\":[]}");
     }
     static void check(Path path, String expected) throws Exception {
         if (!HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(path))).equals(expected))

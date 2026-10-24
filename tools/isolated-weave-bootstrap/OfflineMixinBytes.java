@@ -105,7 +105,7 @@ public final class OfflineMixinBytes {
             }
             return raw;
         }
-        boolean enabled = !Boolean.getBoolean("moonrise.proof.traceMixinBytesOnly");
+        boolean enabled = !Boolean.getBoolean("sorel.proof.traceMixinBytesOnly");
         byte[] output = raw;
         if (enabled) {
             var writer = new ClassWriter(0);

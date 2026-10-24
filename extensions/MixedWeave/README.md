@@ -11,10 +11,10 @@ https://github.com/Weave-MC/Weave-Loader/tree/v0.2.6
 Source archive SHA-256:
 FE9EFB97F292DEB931923094F755D1EF59E8C6696B246CED0A32497648D1F711
 
-Moonrise modifications: Event superclass bridges to current Weave Event;
+Sorel modifications: Event superclass bridges to current Weave Event;
 Kotlin names are relocated to the current loader namespace; EventBus and
 ModInitializer route to the current API. Corresponding modification/build
-sources are shipped under moonrise-source/ and Build-MixedWeaveAdapter.ps1.
+sources are shipped under sorel-source/ and Build-MixedWeaveAdapter.ps1.
 The mixed adapters and these modifications are distributed under GPL-3.0.
 No warranty. See the full license for redistribution and modification terms.
 

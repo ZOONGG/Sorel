@@ -2,7 +2,7 @@
 [CmdletBinding()]
 param()
 $ErrorActionPreference = 'Stop'
-$root = Join-Path $env:LOCALAPPDATA ('Moonrise\temp\synthetic-account-probe-' + [guid]::NewGuid().ToString('N'))
+$root = Join-Path $env:LOCALAPPDATA ('Sorel\temp\synthetic-account-probe-' + [guid]::NewGuid().ToString('N'))
 $checks = [System.Collections.Generic.List[string]]::new()
 function Check([bool]$ok, [string]$name) {
     if (-not $ok) { throw "Synthetic check failed: $name" }
@@ -73,7 +73,7 @@ try {
 } finally {
     if (Test-Path -LiteralPath $root) {
         $resolved = [System.IO.Path]::GetFullPath($root)
-        $parent = [System.IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA 'Moonrise\temp')) + '\'
+        $parent = [System.IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA 'Sorel\temp')) + '\'
         if (-not $resolved.StartsWith($parent, [System.StringComparison]::OrdinalIgnoreCase)) { throw 'Cleanup boundary rejected' }
         Remove-Item -LiteralPath $root -Recurse -Force
     }

@@ -1,4 +1,4 @@
-package dev.moonrise.diagnostic;
+package dev.sorel.diagnostic;
 
 import java.lang.instrument.Instrumentation;
 import java.net.URL;
@@ -11,9 +11,9 @@ public final class DiagnosticAgent {
         String[] paths = options.split("\\|", -1);
         if (paths.length != 2) throw new IllegalArgumentException("Expected untouched Weave JAR|diagnostic log");
         URL self = DiagnosticAgent.class.getProtectionDomain().getCodeSource().getLocation();
-        URLClassLoader isolated = new URLClassLoader("MoonriseMixinDiagnostic",
+        URLClassLoader isolated = new URLClassLoader("SorelMixinDiagnostic",
                 new URL[] { self, Paths.get(paths[0]).toUri().toURL() }, ClassLoader.getPlatformClassLoader());
-        isolated.loadClass("dev.moonrise.diagnostic.DiscoveryTrace")
+        isolated.loadClass("dev.sorel.diagnostic.DiscoveryTrace")
                 .getMethod("install", Instrumentation.class, String.class)
                 .invoke(null, instrumentation, paths[1]);
     }

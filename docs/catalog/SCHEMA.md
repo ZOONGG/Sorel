@@ -18,7 +18,7 @@ The current `CatalogIndex.schemaVersion` is `1`. Unknown versions are rejected b
 - lifecycle and policy: `archived`, `riskLevel`, `installPolicy`, `restricted`, `featured`, `recommended`, `releases`
 - relationships: `dependencies`, `conflicts`
 - informational notes: `warnings`
-- optional counts: `statistics.downloads`, `statistics.moonriseInstalls`
+- optional counts: `statistics.downloads`, `statistics.sorelInstalls`
 
 ## PackageRelease and PackageArtifact
 
@@ -27,7 +27,7 @@ A release includes `version`, `publishedAt`, `changelog`, an `artifact`, and opt
 - `githubRelease`
 - `upstreamDirect`
 - `upstreamRaw`
-- `moonriseRelease`
+- `sorelRelease`
 - `sourceOnly`
 - `externalPage`
 - `unavailable`

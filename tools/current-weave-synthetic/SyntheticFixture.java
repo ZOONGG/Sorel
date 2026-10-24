@@ -1,4 +1,4 @@
-package dev.moonrise.current;
+package dev.sorel.current;
 // Offline byte provider only; excluded from the embedded adapter.
 public final class SyntheticFixture {
     public static byte[] generated;

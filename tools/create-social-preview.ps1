@@ -1,13 +1,13 @@
 param(
-    [string]$ScreenshotPath = "docs\images\en\moonrise-launch.png",
-    [string]$OutputPath = "docs\images\moonrise-social-preview.png"
+    [string]$ScreenshotPath = "docs\images\en\sorel-launch.png",
+    [string]$OutputPath = "docs\images\sorel-social-preview.png"
 )
 
 $ErrorActionPreference = "Stop"
 $repositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $screenshot = if ([IO.Path]::IsPathRooted($ScreenshotPath)) { $ScreenshotPath } else { Join-Path $repositoryRoot $ScreenshotPath }
 $output = if ([IO.Path]::IsPathRooted($OutputPath)) { $OutputPath } else { Join-Path $repositoryRoot $OutputPath }
-$iconPath = Join-Path $repositoryRoot "assets\branding\moonrise-icon-512.png"
+$iconPath = Join-Path $repositoryRoot "assets\branding\sorel-icon-512.png"
 
 Add-Type -AssemblyName System.Drawing
 
@@ -56,7 +56,7 @@ try {
         [Drawing.Color]::FromArgb(86, 221, 225),
         [Drawing.Drawing2D.LinearGradientMode]::Horizontal)
     try {
-        $graphics.DrawString("Moonrise", $titleFont, $titleBrush, 82, 274)
+        $graphics.DrawString("Sorel", $titleFont, $titleBrush, 82, 274)
         $graphics.DrawString("A modern mod manager and launcher", $taglineFont, $taglineBrush, 87, 360)
         $graphics.DrawString("for Lunar Client.", $taglineFont, $taglineBrush, 87, 397)
         $graphics.FillRectangle($accentBrush, 88, 455, 390, 6)
@@ -79,4 +79,4 @@ finally {
     $canvas.Dispose()
 }
 
-Write-Output "Created 1280x640 Moonrise social preview at $output"
+Write-Output "Created 1280x640 Sorel social preview at $output"

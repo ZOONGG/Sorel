@@ -1,15 +1,15 @@
-# Moonrise catalog architecture
+# Sorel catalog architecture
 
-Moonrise keeps the Lunar launch path independent from package discovery and installation.
+Sorel keeps the Lunar launch path independent from package discovery and installation.
 
 ## Launch pipeline
 
-1. Moonrise reads the selected Lunar profile and Minecraft version from its own settings.
+1. Sorel reads the selected Lunar profile and Minecraft version from its own settings.
 2. The official Lunar Launcher remains the only owner of account authentication and session data.
 3. Enabled Weave mods are copied into an isolated launch-session directory. The original imported JARs are not modified.
 4. Enabled Java agents and the verified Weave loader are passed to the native bridge.
-5. Moonrise starts the official Lunar executable and waits for Lunar to confirm the selected profile in its normal launcher log.
-6. Moonrise dispatches the official `lunarclient://launch` deep link and observes the resulting game process.
+5. Sorel starts the official Lunar executable and waits for Lunar to confirm the selected profile in its normal launcher log.
+6. Sorel dispatches the official `lunarclient://launch` deep link and observes the resulting game process.
 
 The catalog client never participates in authentication and never executes JARs while reading metadata.
 
@@ -25,4 +25,4 @@ The catalog client never participates in authentication and never executes JARs 
 
 Mutable production data is stored under the current user's local application-data directory. Repository-local paths remain available when running directly from a source checkout so development does not affect an installed copy.
 
-The public catalog endpoint is maintained in `ZOONGG/Moonrise-Catalog`. `sample-catalog.json` remains a neutral, metadata-only development fallback with no JAR.
+The public catalog endpoint is maintained in `ZOONGG/Sorel-Catalog`. `sample-catalog.json` remains a neutral, metadata-only development fallback with no JAR.

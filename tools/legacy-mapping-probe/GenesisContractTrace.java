@@ -1,4 +1,4 @@
-package dev.moonrise.contract;
+package dev.sorel.contract;
 
 import java.io.*;
 import java.lang.instrument.*;
@@ -25,7 +25,7 @@ public final class GenesisContractTrace implements ClassFileTransformer {
         log = new PrintStream(Files.newOutputStream(evidence.resolve("contract.log")), true, "UTF-8");
         marker = Path.of(markerJar).toUri().toURL();
         Class<?> type = Class.forName("net.weavemc.loader.mappings.XSrgMapper");
-        actualMapper = type.getConstructor(String.class).newInstance("/dev/moonrise/contract/candidate.xsrg");
+        actualMapper = type.getConstructor(String.class).newInstance("/dev/sorel/contract/candidate.xsrg");
         mapper = (Remapper) actualMapper;
         reverse = type.getMethod("mapReverse", String.class);
         for (String line : Files.readAllLines(evidence.resolve("candidate.xsrg")))
@@ -94,7 +94,7 @@ public final class GenesisContractTrace implements ClassFileTransformer {
         }
     }
     private void marker(ClassLoader loader) throws Exception {
-        String path = "lunar/moonrise_genesis_contract_probe.xsrg";
+        String path = "lunar/sorel_genesis_contract_probe.xsrg";
         log.println("MARKER BEFORE " + loader.getResource(path));
         loader.getClass().getMethod("addURL", URL.class).invoke(loader, marker);
         log.println("MARKER AFTER " + loader.getResource(path));

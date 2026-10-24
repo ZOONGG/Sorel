@@ -1,20 +1,20 @@
-# AGENTS.md — Moonrise
+# AGENTS.md — Sorel
 
 ## Project purpose
 
-Moonrise is a Windows application for launching the current official Lunar Client with local Weave mods and Java agents.
+Sorel is a Windows application for launching the current official Lunar Client with local Weave mods and Java agents.
 
 The intended user experience is:
 
 1. Install and authenticate through the official Lunar Launcher.
-2. Open Moonrise.
+2. Open Sorel.
 3. Select an existing Lunar profile for Minecraft 1.8.9.
 4. Install or import packages.
 5. Enable the required packages.
 6. Press Launch.
 7. Play without manually editing JAR files, manifests, JVM arguments, Lunar folders, or account files.
 
-Moonrise is not a replacement for Lunar authentication.
+Sorel is not a replacement for Lunar authentication.
 
 ---
 
@@ -43,7 +43,7 @@ Postpone:
 - ratings;
 - reviews;
 - themes;
-- external Moonrise plugins;
+- external Sorel plugins;
 - multiple Minecraft versions;
 - account systems;
 - new catalog infrastructure;
@@ -63,12 +63,12 @@ Target environment:
 - current supported Weave Loader;
 - per-user local installation.
 
-Official Moonrise-owned packages:
+Official Sorel-owned packages:
 
 - Veyra — Weave mod;
-- Moonrise Cosmetics — Java agent.
+- Sorel Cosmetics — Java agent.
 
-Moonrise-owned packages may be modified normally.
+Sorel-owned packages may be modified normally.
 
 Third-party packages must follow the immutability rules below.
 
@@ -108,12 +108,12 @@ Compatibility must use one of these approaches:
 
 2. **Works with adapter**
    - Keep the original JAR untouched.
-   - Add a separate Moonrise adapter JAR.
+   - Add a separate Sorel adapter JAR.
    - Treat the adapter as a hidden technical dependency.
 
 3. **Maintained compatibility build**
    - Allowed only when source code and license permit it.
-   - Clearly identify it as a Moonrise-maintained build.
+   - Clearly identify it as a Sorel-maintained build.
    - Never pretend it is the original upstream binary.
 
 4. **Incompatible**
@@ -151,7 +151,7 @@ When automatic installation is not appropriate, use an external source link or m
 
 ## Account and credential safety
 
-Moonrise must never read, copy, parse, store, transmit, log, modify, truncate, replace, or back up:
+Sorel must never read, copy, parse, store, transmit, log, modify, truncate, replace, or back up:
 
 - Lunar access tokens;
 - Microsoft access tokens;
@@ -193,20 +193,20 @@ Never print their contents.
 
 ## Filesystem policy
 
-Moonrise must not create random project folders or temporary directories across the user’s drives.
+Sorel must not create random project folders or temporary directories across the user’s drives.
 
 ### Installed mode
 
 Mutable application data must live under one predictable per-user root, preferably:
 
 ```text
-%LOCALAPPDATA%\Moonrise
+%LOCALAPPDATA%\Sorel
 ```
 
 Expected structure:
 
 ```text
-Moonrise/
+Sorel/
 ├── packages/
 ├── adapters/
 ├── cache/
@@ -321,7 +321,7 @@ The pipeline should conceptually be:
 ```text
 Existing Lunar profile
         ↓
-Moonrise launch preparation
+Sorel launch preparation
         ↓
 Untouched enabled Weave mods
         ↓
@@ -365,7 +365,7 @@ Store package types separately:
 ```text
 packages/
 ├── originals/
-├── moonrise-owned/
+├── sorel-owned/
 └── imported/
 
 adapters/
@@ -384,7 +384,7 @@ Adapters must have:
 - version;
 - target package ID;
 - target package SHA-256;
-- supported Moonrise version;
+- supported Sorel version;
 - supported Lunar version;
 - supported Weave version.
 
@@ -470,7 +470,7 @@ Do not automatically decompile or mutate selected JARs.
 Before considering launch recovery complete, test at minimum:
 
 - untouched Veyra loads;
-- untouched Moonrise Cosmetics agent loads;
+- untouched Sorel Cosmetics agent loads;
 - untouched third-party Weave JAR remains unchanged;
 - untouched third-party agent remains unchanged;
 - invalid JAR is rejected;
@@ -622,8 +622,8 @@ The recovery milestone is complete only when a normal user can:
 1. Install official Lunar Client.
 2. Authenticate in the official Lunar Launcher.
 3. Launch Lunar 1.8.9 once.
-4. Install Moonrise.
-5. Open Moonrise without creating random folders.
+4. Install Sorel.
+5. Open Sorel without creating random folders.
 6. Install or import an untouched supported package.
 7. Enable it without manually editing anything.
 8. Launch Minecraft 1.8.9.

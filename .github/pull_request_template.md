@@ -4,8 +4,8 @@ Describe the problem and the focused solution.
 
 ## Validation
 
-- [ ] `dotnet build Moonrise.sln -c Release`
-- [ ] `dotnet test Moonrise.sln -c Release`
+- [ ] `dotnet build Sorel.sln -c Release`
+- [ ] `dotnet test Sorel.sln -c Release`
 - [ ] Clean `win-x64` publish, when packaging or runtime files changed
 - [ ] Launch, Library, Diagnostics, and Settings pages exercised, when UI changed
 - [ ] English and Russian user-facing text remain in parity

@@ -19,7 +19,7 @@ public final class MetadataReadInterception {
             f.getClassName().equals(UTILITY) && f.getMethodName().equals("fetchModConfig")));
         if (!actualParser) throw new AssertionError("Hook called outside actual parser");
         byte[] expected = legacyInputs.get(Path.of(jar.getName()).toRealPath());
-        if (Boolean.getBoolean("moonrise.proof.isolatedBootstrap")) {
+        if (Boolean.getBoolean("sorel.proof.isolatedBootstrap")) {
             boolean registration = StackWalker.getInstance().walk(frames -> frames.anyMatch(f ->
                 f.getClassName().equals("net.weavemc.loader.impl.WeaveLoader") && f.getMethodName().equals("registerAsMod")));
             System.out.println("METADATA_READ jar=" + jar.getName() + "; registerAsMod=" + registration +

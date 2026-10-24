@@ -11,8 +11,8 @@ if (!$ExecuteGuardedProbe) { throw "Prepared only; use -ExecuteGuardedProbe for 
 $root = Split-Path $PSScriptRoot -Parent
 $run = Join-Path $root ('runtime/bwh-lifecycle-bootstrap/' + [guid]::NewGuid().ToString('N'))
 $inputs = @{
-    loader = Join-Path $env:LOCALAPPDATA 'Moonrise/dev/cache/runtime/weave/weave-loader.jar'
-    bwh = Join-Path $env:LOCALAPPDATA 'Moonrise/adapters/maintained-builds/6da5b2a67e05e07deae2779b4aa3d1b70e5028ded227c41487ff783f5d609a57.jar'
+    loader = Join-Path $env:LOCALAPPDATA 'Sorel/dev/cache/runtime/weave/weave-loader.jar'
+    bwh = Join-Path $env:LOCALAPPDATA 'Sorel/adapters/maintained-builds/6da5b2a67e05e07deae2779b4aa3d1b70e5028ded227c41487ff783f5d609a57.jar'
     api = Join-Path $env:USERPROFILE '.weave/.maven-repository/net/weavemc/api/api-v1_8/1.3.4/api-v1_8-1.3.4.jar'
     vanilla = Join-Path $env:APPDATA '.minecraft/versions/1.8.9/1.8.9.jar'
     mappings = Join-Path $env:USERPROFILE '.weave/.cache/mappings/merged_1.8.9/mappings.tiny'

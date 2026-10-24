@@ -1,10 +1,10 @@
-package dev.moonrise.mapping;
+package dev.sorel.mapping;
 import java.io.*;
 import java.nio.file.*;
 import java.time.Instant;
 import java.util.Locale;
 final class StartupTrace {
-    static boolean enabled() { return System.getenv("MOONRISE_DEV_STARTUP_CAPTURE") != null; }
+    static boolean enabled() { return System.getenv("SOREL_DEV_STARTUP_CAPTURE") != null; }
     static String sanitize(String line) {
         if(line.matches("\\s*at [A-Za-z0-9_.$/<>]+\\((?:[A-Za-z0-9_.$-]+\\.java:[0-9]+|Native Method|Unknown Source)\\)")) return line;
         String lower=line.toLowerCase(Locale.ROOT);
@@ -28,13 +28,13 @@ final class StartupTrace {
         for(String line:text.toString().split("\\R")) write(sanitize(line));
     }
     private static void write(String line) {
-        System.err.println("[Moonrise startup] "+line); System.err.flush();
+        System.err.println("[Sorel startup] "+line); System.err.flush();
         try(var writer=new PrintWriter(Files.newBufferedWriter(
-                Path.of(System.getenv("MOONRISE_DEV_STARTUP_CAPTURE"),"jvm-"+ProcessHandle.current().pid()+"-mapping.log"),
+                Path.of(System.getenv("SOREL_DEV_STARTUP_CAPTURE"),"jvm-"+ProcessHandle.current().pid()+"-mapping.log"),
                 StandardOpenOption.CREATE,StandardOpenOption.APPEND))) {
             writer.println(line); writer.flush();
         } catch(Exception failure) {
-            System.err.println("[Moonrise startup] trace-file-write-failed: "+failure.getClass().getName()); System.err.flush();
+            System.err.println("[Sorel startup] trace-file-write-failed: "+failure.getClass().getName()); System.err.flush();
         }
     }
 }

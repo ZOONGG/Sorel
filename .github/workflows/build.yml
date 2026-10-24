@@ -1,6 +1,7 @@
 name: Build
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -36,28 +37,28 @@ jobs:
       - name: Scan repository safety
         shell: pwsh
         env:
-          MOONRISE_PRIVATE_PATTERNS: ${{ secrets.PRIVATE_NAME_PATTERNS }}
+          SOREL_PRIVATE_PATTERNS: ${{ secrets.PRIVATE_NAME_PATTERNS }}
         run: ./tools/Test-RepositorySafety.ps1
 
       - name: Verify native bridge builds from source
         shell: pwsh
-        run: ./tools/Build-NativeBridge.ps1 -OutputPath "artifacts/native/Moonrise.Native.dll"
+        run: ./tools/Build-NativeBridge.ps1 -OutputPath "runtime/bridge/Sorel.Native.dll"
 
       - name: Upload native bridge verification artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Moonrise-Native-Bridge-${{ github.run_number }}
-          path: artifacts/native/Moonrise.Native.dll
+          name: Sorel-Native-Bridge-${{ github.run_number }}
+          path: runtime/bridge/Sorel.Native.dll
           if-no-files-found: error
           retention-days: 7
       - name: Restore locked dependencies
-        run: dotnet restore Moonrise.sln --locked-mode
+        run: dotnet restore Sorel.sln --locked-mode
 
       - name: Build Release
-        run: dotnet build Moonrise.sln -c Release --no-restore
+        run: dotnet build Sorel.sln -c Release --no-restore
 
       - name: Run tests
-        run: dotnet test Moonrise.sln -c Release --no-build --filter "Category!=PrivateAssets" --logger "trx;LogFileName=moonrise.trx" --results-directory artifacts/test-results
+        run: dotnet test Sorel.sln -c Release --no-build --filter "Category!=PrivateAssets" --logger "trx;LogFileName=sorel.trx" --results-directory artifacts/test-results
 
       - name: Install pinned Velopack
         shell: pwsh
@@ -66,8 +67,8 @@ jobs:
       - name: Build Setup and Portable artifacts
         shell: pwsh
         run: |
-          ./tools/New-MoonriseRelease.ps1 `
-            -Version "0.1.0-beta.2" `
+          ./tools/New-SorelRelease.ps1 `
+            -Version "1.0.0" `
             -OutputRoot "artifacts/release" `
             -Velopack -VpkPath artifacts/velopack-tools/vpk.exe `
             -SkipRestore `
@@ -76,20 +77,20 @@ jobs:
       - name: Upload Windows distribution artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: Moonrise-Windows-${{ github.run_number }}
+          name: Sorel-Windows-${{ github.run_number }}
           path: artifacts/release/velopack/*
           if-no-files-found: error
           retention-days: 14
 
       - name: Test isolated Velopack install and launch
         shell: pwsh
-        run: ./tools/Test-MoonriseVelopackInstaller.ps1 -SetupPath artifacts/release/velopack/Moonrise.App-beta-Setup.exe
+        run: ./tools/Test-SorelVelopackInstaller.ps1 -SetupPath artifacts/release/velopack/Sorel.App-stable-Setup.exe
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: Moonrise-test-results
+          name: Sorel-test-results
           path: artifacts/test-results/*.trx
           if-no-files-found: error
           retention-days: 14

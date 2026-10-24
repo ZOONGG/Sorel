@@ -1,6 +1,6 @@
 # Code of conduct
 
-Moonrise is committed to a welcoming, professional, and harassment-free community.
+Sorel is committed to a welcoming, professional, and harassment-free community.
 
 ## Expected behavior
 
@@ -18,4 +18,4 @@ Harassment, discrimination, threats, sexualized conduct, deliberate intimidation
 
 Report conduct concerns privately to the maintainers through the repository's Security reporting channel when possible. Maintainers may edit or remove content, close contributions, issue warnings, or temporarily or permanently restrict participation. Reports will be handled as privately and fairly as practical.
 
-This code applies in repository spaces and when a person is publicly representing the Moonrise project.
+This code applies in repository spaces and when a person is publicly representing the Sorel project.

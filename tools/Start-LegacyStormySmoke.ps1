@@ -1,15 +1,15 @@
 param([switch]$PrepareOnly, [string]$ExecutablePath)
 $ErrorActionPreference = 'Stop'
 $appRoot = Split-Path $PSScriptRoot -Parent
-$executable = Join-Path $appRoot 'src/Moonrise/bin/Release/net8.0-windows/win-x64/Moonrise.exe'
+$executable = Join-Path $appRoot 'src/Sorel/bin/Release/net8.0-windows/win-x64/Sorel.exe'
 if ($ExecutablePath) { $executable = [IO.Path]::GetFullPath($ExecutablePath) }
-$dataRoot = Join-Path $env:LOCALAPPDATA 'Moonrise/dev'
+$dataRoot = Join-Path $env:LOCALAPPDATA 'Sorel/dev'
 $loader = Join-Path $dataRoot 'cache/runtime/weave/weave-loader-0.2.6.jar'
-if (Get-Process Moonrise -ErrorAction SilentlyContinue) {
-    throw 'Close Moonrise first so it cannot overwrite the smoke package configuration.'
+if (Get-Process Sorel -ErrorAction SilentlyContinue) {
+    throw 'Close Sorel first so it cannot overwrite the smoke package configuration.'
 }
 if (-not (Test-Path -LiteralPath $executable -PathType Leaf)) { throw 'Build the smoke executable first.' }
-$bridge = Join-Path $appRoot 'runtime/mapping-startup-build/Moonrise.Native.dll'
+$bridge = Join-Path $appRoot 'runtime/mapping-startup-build/Sorel.Native.dll'
 if (-not (Test-Path -LiteralPath $bridge -PathType Leaf)) { throw 'Startup capture bridge is missing.' }
 if ((Get-FileHash -LiteralPath $loader -Algorithm SHA256).Hash -ne
     'C4200D145C0D3D78F57EAB4DDEE3A64FF1A3176E65F2E2B15A31777A0142B524') {
@@ -21,20 +21,20 @@ $legacyMods = Join-Path $env:USERPROFILE '.weave/mods'
 if (Get-ChildItem -LiteralPath $legacyMods -Filter '*.jar' -File -Recurse -ErrorAction SilentlyContinue) {
     throw 'Legacy ~/.weave/mods contains JARs. Remove external selection ambiguity before this smoke.'
 }
-foreach ($variableName in @('JAVA_TOOL_OPTIONS', '_JAVA_OPTIONS', 'JDK_JAVA_OPTIONS', 'MOONRISE_MIXIN_DIAGNOSTIC_AGENT', 'MOONRISE_MIXIN_DIAGNOSTIC_OPTIONS')) {
+foreach ($variableName in @('JAVA_TOOL_OPTIONS', '_JAVA_OPTIONS', 'JDK_JAVA_OPTIONS', 'SOREL_MIXIN_DIAGNOSTIC_AGENT', 'SOREL_MIXIN_DIAGNOSTIC_OPTIONS')) {
     if ([Environment]::GetEnvironmentVariable($variableName)) {
         throw "Clear $variableName for this smoke; inherited JVM options would invalidate isolation."
     }
 }
 $indexPath = Join-Path $dataRoot 'packages/metadata/index.json'
-$settingsPath = Join-Path $dataRoot 'settings/moonrise-settings.json'
+$settingsPath = Join-Path $dataRoot 'settings/sorel-settings.json'
 $index = Get-Content -LiteralPath $indexPath -Raw | ConvertFrom-Json
 $settings = Get-Content -LiteralPath $settingsPath -Raw | ConvertFrom-Json
 $evidenceDirectory = Join-Path $dataRoot ('logs/legacy-stormy-smoke-' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $evidenceDirectory | Out-Null
-# Only Moonrise package/settings files are backed up; no Lunar account files.
+# Only Sorel package/settings files are backed up; no Lunar account files.
 Copy-Item -LiteralPath $indexPath -Destination (Join-Path $evidenceDirectory 'package-index.before.json')
-Copy-Item -LiteralPath $settingsPath -Destination (Join-Path $evidenceDirectory 'moonrise-settings.before.json')
+Copy-Item -LiteralPath $settingsPath -Destination (Join-Path $evidenceDirectory 'sorel-settings.before.json')
 $stormy = @($index.Packages | Where-Object { $_.Kind -eq 0 -and $_.Sha256 -eq '52ED9DA4C4F570FD43B32671E0D94FA5FC9E441168645D2E3DE054169374B021' })
 if ($stormy.Count -ne 1) { throw 'Expected exactly one original Stormy package in the dev library.' }
 $stormyPath = Join-Path $dataRoot $stormy[0].ManagedFilePath
@@ -60,15 +60,15 @@ $utf8 = New-Object System.Text.UTF8Encoding($false)
     StormySha256 = $stormy[0].Sha256
     RuntimeSmoke = 'pending-user-launch'
 } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $evidenceDirectory 'preparation.json') -Encoding UTF8
-Copy-Item -LiteralPath $bridge -Destination (Join-Path $evidenceDirectory 'Moonrise.Native.dll')
+Copy-Item -LiteralPath $bridge -Destination (Join-Path $evidenceDirectory 'Sorel.Native.dll')
 if (-not $PrepareOnly) {
-    $previousCapture = [Environment]::GetEnvironmentVariable('MOONRISE_DEV_STARTUP_CAPTURE')
+    $previousCapture = [Environment]::GetEnvironmentVariable('SOREL_DEV_STARTUP_CAPTURE')
     try {
-        $env:MOONRISE_DEV_STARTUP_CAPTURE = $evidenceDirectory
-        $moonrise = Start-Process -FilePath $executable -ArgumentList '--dev-weave-mod-smoke','--dev-jvm-startup-diagnostic' -WorkingDirectory $evidenceDirectory -WindowStyle Hidden -PassThru
-    } finally { [Environment]::SetEnvironmentVariable('MOONRISE_DEV_STARTUP_CAPTURE', $previousCapture) }
+        $env:SOREL_DEV_STARTUP_CAPTURE = $evidenceDirectory
+        $sorel = Start-Process -FilePath $executable -ArgumentList '--dev-weave-mod-smoke','--dev-jvm-startup-diagnostic' -WorkingDirectory $evidenceDirectory -WindowStyle Hidden -PassThru
+    } finally { [Environment]::SetEnvironmentVariable('SOREL_DEV_STARTUP_CAPTURE', $previousCapture) }
 }
-Write-Host 'Prepared: OfficialLunar, legacy Weave 0.2.6, ONLY Stormy, zero package agents. Click Launch in Moonrise after confirmation.'
+Write-Host 'Prepared: OfficialLunar, legacy Weave 0.2.6, ONLY Stormy, zero package agents. Click Launch in Sorel after confirmation.'
 Write-Host "Preparation evidence: $evidenceDirectory"
 
 if ($PrepareOnly) { return }
@@ -86,9 +86,9 @@ while ($true) {
     $lines = @(Get-ChildItem -LiteralPath $evidenceDirectory -Filter 'jvm-*.log' | ForEach-Object { Get-Content -LiteralPath $_.FullName -ErrorAction SilentlyContinue })
     $text = $lines -join "`n"
     $result.XsrgVerified = $text.Contains('genesis-resource-attached-verified')
-    $result.ServiceCreated = $text.Contains('[Moonrise Weave] service-created')
+    $result.ServiceCreated = $text.Contains('[Sorel Weave] service-created')
     $result.ServiceSelected = $text.Contains('service-selected=net.weavemc.loader.mixins.WeaveMixinService')
-    $result.InitComplete = $text.Contains('[Moonrise Weave] init-complete')
+    $result.InitComplete = $text.Contains('[Sorel Weave] init-complete')
     $result.StormyDetected = $text -match '\[Weave\] Loading .*Stormy-1\.0\.jar'
     # Pinned loader bytecode invokes every configured preInit synchronously before init-complete.
     # With one hash-verified mod, detection + init-complete proves Main.preInit returned.
@@ -111,7 +111,7 @@ while ($true) {
     }
     $result | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $evidenceDirectory 'result.json') -Encoding UTF8
     if ($missedExit -or ($game -and $game.HasExited)) { break }
-    if (-not $game -and $moonrise.HasExited) { break }
+    if (-not $game -and $sorel.HasExited) { break }
     Start-Sleep -Milliseconds 200
 }
 $result['StormySha256After'] = (Get-FileHash -LiteralPath $stormyPath -Algorithm SHA256).Hash

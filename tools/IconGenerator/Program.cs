@@ -18,26 +18,26 @@ foreach (var size in applicationSizes)
 {
     SavePng(
         Render(size, DrawApplicationIcon),
-        Path.Combine(outputDirectory, $"moonrise-icon-{size}.png"));
+        Path.Combine(outputDirectory, $"sorel-icon-{size}.png"));
 }
 
 foreach (var size in traySizes)
 {
     SavePng(
         Render(size, DrawTrayIcon),
-        Path.Combine(outputDirectory, $"moonrise-tray-{size}.png"));
+        Path.Combine(outputDirectory, $"sorel-tray-{size}.png"));
 }
 
 WriteIcon(
-    Path.Combine(outputDirectory, "moonrise-icon.ico"),
+    Path.Combine(outputDirectory, "sorel-icon.ico"),
     new[] { 16, 24, 32, 48, 64, 128, 256 },
     DrawApplicationIcon);
 WriteIcon(
-    Path.Combine(outputDirectory, "moonrise-tray.ico"),
+    Path.Combine(outputDirectory, "sorel-tray.ico"),
     traySizes,
     DrawTrayIcon);
 
-Console.WriteLine($"Generated Moonrise raster and Windows icon assets in {outputDirectory}");
+Console.WriteLine($"Generated Sorel raster and Windows icon assets in {outputDirectory}");
 return 0;
 
 static Bitmap Render(int size, Action<Graphics> draw)

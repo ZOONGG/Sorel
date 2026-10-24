@@ -1,4 +1,4 @@
-package dev.moonrise.mapping;
+package dev.sorel.mapping;
 import java.lang.instrument.*;
 import java.lang.reflect.*;
 import java.net.*;

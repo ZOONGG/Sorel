@@ -1,15 +1,15 @@
 param([switch]$PrepareOnly, [string]$ExecutablePath)
 $ErrorActionPreference = 'Stop'
 $appRoot = Split-Path $PSScriptRoot -Parent
-$executable = Join-Path $appRoot 'src/Moonrise/bin/Release/net8.0-windows/win-x64/Moonrise.exe'
+$executable = Join-Path $appRoot 'src/Sorel/bin/Release/net8.0-windows/win-x64/Sorel.exe'
 if ($ExecutablePath) { $executable = [IO.Path]::GetFullPath($ExecutablePath) }
-$dataRoot = Join-Path $env:LOCALAPPDATA 'Moonrise/dev'
+$dataRoot = Join-Path $env:LOCALAPPDATA 'Sorel/dev'
 $loader = Join-Path $dataRoot 'cache/runtime/weave/weave-loader-0.2.6.jar'
-if (Get-Process Moonrise -ErrorAction SilentlyContinue) {
-    throw 'Close Moonrise first so it cannot overwrite the smoke package configuration.'
+if (Get-Process Sorel -ErrorAction SilentlyContinue) {
+    throw 'Close Sorel first so it cannot overwrite the smoke package configuration.'
 }
 if (-not (Test-Path -LiteralPath $executable -PathType Leaf)) { throw 'Build the smoke executable first.' }
-$bridge = Join-Path $appRoot 'runtime/mapping-startup-build/Moonrise.Native.dll'
+$bridge = Join-Path $appRoot 'runtime/mapping-startup-build/Sorel.Native.dll'
 if (-not (Test-Path -LiteralPath $bridge -PathType Leaf)) { throw 'Startup capture bridge is missing.' }
 if ((Get-FileHash -LiteralPath $loader -Algorithm SHA256).Hash -ne
     'C4200D145C0D3D78F57EAB4DDEE3A64FF1A3176E65F2E2B15A31777A0142B524') {
@@ -27,14 +27,14 @@ foreach ($variableName in @('JAVA_TOOL_OPTIONS', '_JAVA_OPTIONS', 'JDK_JAVA_OPTI
     }
 }
 $indexPath = Join-Path $dataRoot 'packages/metadata/index.json'
-$settingsPath = Join-Path $dataRoot 'settings/moonrise-settings.json'
+$settingsPath = Join-Path $dataRoot 'settings/sorel-settings.json'
 $index = Get-Content -LiteralPath $indexPath -Raw | ConvertFrom-Json
 $settings = Get-Content -LiteralPath $settingsPath -Raw | ConvertFrom-Json
 $evidenceDirectory = Join-Path $dataRoot ('logs/legacy-weave-smoke-' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $evidenceDirectory | Out-Null
-# Only Moonrise package/settings files are backed up; no Lunar account files.
+# Only Sorel package/settings files are backed up; no Lunar account files.
 Copy-Item -LiteralPath $indexPath -Destination (Join-Path $evidenceDirectory 'package-index.before.json')
-Copy-Item -LiteralPath $settingsPath -Destination (Join-Path $evidenceDirectory 'moonrise-settings.before.json')
+Copy-Item -LiteralPath $settingsPath -Destination (Join-Path $evidenceDirectory 'sorel-settings.before.json')
 foreach ($package in $index.Packages) { $package.Enabled = $false }
 $settings.Client = 'lunar'
 $settings.MinecraftVersion = '1.8.9'
@@ -54,15 +54,15 @@ $utf8 = New-Object System.Text.UTF8Encoding($false)
     Backend = 'OfficialLunar'
     RuntimeSmoke = 'pending-user-launch'
 } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $evidenceDirectory 'preparation.json') -Encoding UTF8
-Copy-Item -LiteralPath $bridge -Destination (Join-Path $evidenceDirectory 'Moonrise.Native.dll')
+Copy-Item -LiteralPath $bridge -Destination (Join-Path $evidenceDirectory 'Sorel.Native.dll')
 if (-not $PrepareOnly) {
-    $previousCapture = [Environment]::GetEnvironmentVariable('MOONRISE_DEV_STARTUP_CAPTURE')
+    $previousCapture = [Environment]::GetEnvironmentVariable('SOREL_DEV_STARTUP_CAPTURE')
     try {
-        $env:MOONRISE_DEV_STARTUP_CAPTURE = $evidenceDirectory
-        $moonrise = Start-Process -FilePath $executable -ArgumentList '--dev-legacy-weave-smoke','--dev-jvm-startup-diagnostic' -WindowStyle Hidden -PassThru
-    } finally { [Environment]::SetEnvironmentVariable('MOONRISE_DEV_STARTUP_CAPTURE', $previousCapture) }
+        $env:SOREL_DEV_STARTUP_CAPTURE = $evidenceDirectory
+        $sorel = Start-Process -FilePath $executable -ArgumentList '--dev-legacy-weave-smoke','--dev-jvm-startup-diagnostic' -WindowStyle Hidden -PassThru
+    } finally { [Environment]::SetEnvironmentVariable('SOREL_DEV_STARTUP_CAPTURE', $previousCapture) }
 }
-Write-Host 'Prepared: legacy Weave 0.2.6, zero mods, zero package agents. Click Launch in Moonrise after confirmation.'
+Write-Host 'Prepared: legacy Weave 0.2.6, zero mods, zero package agents. Click Launch in Sorel after confirmation.'
 Write-Host "Preparation evidence: $evidenceDirectory"
 
 if ($PrepareOnly) { return }
@@ -80,9 +80,9 @@ while ($true) {
     $lines = @(Get-ChildItem -LiteralPath $evidenceDirectory -Filter 'jvm-*.log' | ForEach-Object { Get-Content -LiteralPath $_.FullName -ErrorAction SilentlyContinue })
     $text = $lines -join "`n"
     $result.XsrgVerified = $text.Contains('genesis-resource-attached-verified')
-    $result.ServiceCreated = $text.Contains('[Moonrise Weave] service-created')
+    $result.ServiceCreated = $text.Contains('[Sorel Weave] service-created')
     $result.ServiceSelected = $text.Contains('service-selected=net.weavemc.loader.mixins.WeaveMixinService')
-    $result.InitComplete = $text.Contains('[Moonrise Weave] init-complete')
+    $result.InitComplete = $text.Contains('[Sorel Weave] init-complete')
     $result.Stage = if ($result.InitComplete) { 'weave-init-complete' } elseif ($result.ServiceSelected) { 'mixin-selected' } elseif ($result.ServiceCreated) { 'mixin-created' } elseif ($result.XsrgVerified) { 'xsrg-verified' } else { 'mapping-bootstrap' }
     if (-not $result.FirstException) {
         $first = $lines | Where-Object { $_ -match '^(?:java\.|org\.|net\.|com\.)[\w.$]+(?:Exception|Error)(?::|$)|Exception in thread|FAIL CLOSED:' } | Select-Object -First 1
@@ -100,7 +100,7 @@ while ($true) {
     }
     $result | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $evidenceDirectory 'result.json') -Encoding UTF8
     if ($missedExit -or ($game -and $game.HasExited)) { break }
-    if (-not $game -and $moonrise.HasExited) { break }
+    if (-not $game -and $sorel.HasExited) { break }
     Start-Sleep -Milliseconds 200
 }
 $result.Menu = if ((Read-Host 'Did Minecraft reach a working main menu? [y/N]') -match '^(y|yes)$') { 'confirmed-by-user' } else { 'not-confirmed' }

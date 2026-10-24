@@ -1,5 +1,5 @@
 name: Feature request
-description: Suggest a focused, mod-agnostic Moonrise improvement
+description: Suggest a focused, mod-agnostic Sorel improvement
 title: "[Feature]: "
 labels:
   - enhancement
@@ -7,14 +7,14 @@ body:
   - type: markdown
     attributes:
       value: |
-        Moonrise keeps authentication in the official Lunar Launcher and does not accept proprietary Lunar Client files or private mod code.
+        Sorel keeps authentication in the official Lunar Launcher and does not accept proprietary Lunar Client files or private mod code.
 
         **Do not upload account files, tokens, passwords, private mod JARs, personal information, or full unredacted command lines.**
   - type: textarea
     id: problem
     attributes:
       label: Problem
-      description: What user problem should Moonrise solve?
+      description: What user problem should Sorel solve?
     validations:
       required: true
   - type: textarea

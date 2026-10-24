@@ -118,7 +118,7 @@ public final class MixedWeaveProof {
             Object probe = loader.loadClass("fixture.ProbeListener").getConstructor().newInstance();
             bus.getMethod("subscribe", Object.class).invoke(null, probe);
             probe.getClass().getMethod("registerCommand").invoke(probe);
-            Object chat = event.getClass().getConstructor(String.class).newInstance("/moonriseproof alpha");
+            Object chat = event.getClass().getConstructor(String.class).newInstance("/sorelproof alpha");
             bus.getMethod("callEvent", eventBase).invoke(null, chat);
             if (probe.getClass().getField("calls").getInt(probe) != 1 ||
                 !"alpha".equals(probe.getClass().getField("argument").get(probe)) ||
@@ -165,7 +165,7 @@ public final class MixedWeaveProof {
         if (!before.equals(hash(mod))) throw new AssertionError("Original modified");
         if (!bwhBefore.equals(hash(bwh))) throw new AssertionError("Maintained BWH modified");
         System.out.println("PASS Raven SHA unchanged; no output mod JAR");
-        if (Boolean.getBoolean("moonrise.proof.requireDiscovery"))
+        if (Boolean.getBoolean("sorel.proof.requireDiscovery"))
             throw new IllegalStateException("BLOCKED: actual WeaveLoader discovery/loader-wide identity not certified; metadata parser and preparation PASS are partial evidence only");
         System.out.println("SCOPE: regression proof only; actual WeaveLoader discovery remains BLOCKED");
     }

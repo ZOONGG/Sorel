@@ -7,9 +7,9 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 $run = Join-Path $root ('runtime/isolated-weave-bootstrap/' + [guid]::NewGuid().ToString('N'))
 $inputs = @{
-    loader = Join-Path $env:LOCALAPPDATA 'Moonrise/dev/cache/runtime/weave/weave-loader.jar'
-    raven = Join-Path $env:LOCALAPPDATA 'Moonrise/packages/weave/RavenWeave-1.1.4.jar'
-    bwh = Join-Path $env:LOCALAPPDATA 'Moonrise/adapters/maintained-builds/6da5b2a67e05e07deae2779b4aa3d1b70e5028ded227c41487ff783f5d609a57.jar'
+    loader = Join-Path $env:LOCALAPPDATA 'Sorel/dev/cache/runtime/weave/weave-loader.jar'
+    raven = Join-Path $env:LOCALAPPDATA 'Sorel/packages/weave/RavenWeave-1.1.4.jar'
+    bwh = Join-Path $env:LOCALAPPDATA 'Sorel/adapters/maintained-builds/6da5b2a67e05e07deae2779b4aa3d1b70e5028ded227c41487ff783f5d609a57.jar'
     api = Join-Path $env:USERPROFILE '.weave/.maven-repository/net/weavemc/api/api-v1_8/1.3.4/api-v1_8-1.3.4.jar'
     vanilla = Join-Path $env:APPDATA '.minecraft/versions/1.8.9/1.8.9.jar'
     mappings = Join-Path $env:USERPROFILE '.weave/.cache/mappings/merged_1.8.9/mappings.tiny'
@@ -57,7 +57,7 @@ try {
     }
     if ($joined -match 'String (?:[A-Za-z]:[\\/])') { throw 'Unbounded filesystem root; stop before launch' }
     # Compile existing parser/interception helpers unchanged; no existing agent is activated.
-    $legacy = Join-Path $env:LOCALAPPDATA 'Moonrise/dev/cache/runtime/weave/weave-loader-0.2.6.jar'
+    $legacy = Join-Path $env:LOCALAPPDATA 'Sorel/dev/cache/runtime/weave/weave-loader-0.2.6.jar'
     & "$JavaHome/bin/javap.exe" -classpath $legacy -c -p net.weavemc.loader.api.command.CommandBus net.weavemc.loader.api.command.Command |
         Set-Content "$run/logs/legacy-commandbus-bytecode.txt"
     if ($LASTEXITCODE) { throw 'Legacy CommandBus bytecode audit failed' }
@@ -110,8 +110,8 @@ try {
     foreach ($pair in @(@('USERPROFILE','home'), @('HOME','home'), @('APPDATA','appdata'), @('LOCALAPPDATA','localappdata'), @('TEMP','temp'), @('TMP','temp'))) {
         $psi.EnvironmentVariables[$pair[0]] = "$run/$($pair[1])"
     }
-    $arguments = @('-Xverify:all', '-Djava.awt.headless=true', '-Dmoonrise.proof.isolatedBootstrap=true', '-Djava.security.manager=allow', "-Duser.home=$run/home", "-Duser.dir=$run/work", "-Djava.io.tmpdir=$run/temp", "-Dweave.repo.local.path=$repo", "-Dweave.vanilla.jar.path=$run/inputs/vanilla.jar", '-Dweave.repo.offline.enabled=true', '-Dweave.environment.version=1.8.9', '-Dweave.namespace.environment.runtime=mcp-named', '-Dweave.namespace.environment.classpath=mcp-named', "-javaagent:$run/test-only-agent.jar", '-cp', "$run/classes;$loader", 'OfflineBootstrap', $run, "$run/inputs/raven.jar", "$run/inputs/bwh.jar")
-    if ($TraceMixinBytesOnly) { $arguments = @('-Dmoonrise.proof.traceMixinBytesOnly=true') + $arguments }
+    $arguments = @('-Xverify:all', '-Djava.awt.headless=true', '-Dsorel.proof.isolatedBootstrap=true', '-Djava.security.manager=allow', "-Duser.home=$run/home", "-Duser.dir=$run/work", "-Djava.io.tmpdir=$run/temp", "-Dweave.repo.local.path=$repo", "-Dweave.vanilla.jar.path=$run/inputs/vanilla.jar", '-Dweave.repo.offline.enabled=true', '-Dweave.environment.version=1.8.9', '-Dweave.namespace.environment.runtime=mcp-named', '-Dweave.namespace.environment.classpath=mcp-named', "-javaagent:$run/test-only-agent.jar", '-cp', "$run/classes;$loader", 'OfflineBootstrap', $run, "$run/inputs/raven.jar", "$run/inputs/bwh.jar")
+    if ($TraceMixinBytesOnly) { $arguments = @('-Dsorel.proof.traceMixinBytesOnly=true') + $arguments }
     # System owns both appended mod definitions and the sole named game archive.
     # Official vanilla remains FileManager input only, never a classpath entry.
     $arguments[$arguments.IndexOf('-cp') + 1] = "$run/runner;$loader;$run/inputs/game.jar;$run/inputs/guava.jar"

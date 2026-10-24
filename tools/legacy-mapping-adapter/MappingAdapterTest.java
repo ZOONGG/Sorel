@@ -1,4 +1,4 @@
-package dev.moonrise.mapping;
+package dev.sorel.mapping;
 import java.nio.file.*;
 import java.net.*;
 import java.util.*;

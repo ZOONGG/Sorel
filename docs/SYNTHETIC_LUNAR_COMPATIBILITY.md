@@ -6,7 +6,7 @@ it does not launch Lunar/Minecraft, validate packages, or replace Stage 3 smoke 
 
 ## Fixtures and coverage
 
-`tests/Moonrise.Tests/Fixtures/SyntheticLunarFiles.cs` generates disposable SQLite,
+`tests/Sorel.Tests/Fixtures/SyntheticLunarFiles.cs` generates disposable SQLite,
 JSON and log files in one unique temporary directory. Every service receives explicit
 fixture paths; no default user paths, downloaded data, real profile databases, private
 assets or third-party JARs are needed. Connections disable pooling so cleanup releases
@@ -52,9 +52,9 @@ not identifiable unless the new file is shorter. These tests do not claim otherw
 Run on Windows with .NET 8:
 
 ```powershell
-dotnet restore Moonrise.sln --locked-mode
-dotnet build Moonrise.sln -c Release --no-restore
-dotnet test Moonrise.sln -c Release --no-build --filter "Category!=PrivateAssets"
+dotnet restore Sorel.sln --locked-mode
+dotnet build Sorel.sln -c Release --no-restore
+dotnet test Sorel.sln -c Release --no-build --filter "Category!=PrivateAssets"
 ```
 
 The `Synthetic Lunar compatibility` workflow runs the same locked restore,

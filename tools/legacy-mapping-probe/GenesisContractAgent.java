@@ -1,4 +1,4 @@
-package dev.moonrise.contract;
+package dev.sorel.contract;
 
 import java.lang.instrument.Instrumentation;
 import java.net.URL;
@@ -11,9 +11,9 @@ public final class GenesisContractAgent {
         String[] p = options.split("\\|", -1);
         if (p.length != 3) throw new IllegalArgumentException("Weave JAR|evidence directory|marker JAR");
         URL self = GenesisContractAgent.class.getProtectionDomain().getCodeSource().getLocation();
-        URLClassLoader isolated = new URLClassLoader("MoonriseGenesisContract",
+        URLClassLoader isolated = new URLClassLoader("SorelGenesisContract",
             new URL[]{self, Path.of(p[0]).toUri().toURL()}, ClassLoader.getPlatformClassLoader());
-        isolated.loadClass("dev.moonrise.contract.GenesisContractTrace")
+        isolated.loadClass("dev.sorel.contract.GenesisContractTrace")
             .getMethod("install", Instrumentation.class, String.class, String.class)
             .invoke(null, inst, p[1], p[2]);
     }
