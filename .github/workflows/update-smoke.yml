@@ -10,7 +10,8 @@ on:
         default: v0.1.0-beta.2
         type: string
 permissions:
-  contents: read
+  # GitHub requires push access to read an unpublished draft release.
+  contents: write
 jobs:
   update:
     runs-on: windows-latest
@@ -24,7 +25,9 @@ jobs:
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
-        run: ./tools/Test-MoonriseReleaseUpdate.ps1 -FeedMode '${{ inputs.feed_mode }}' -ReleaseTag '${{ inputs.release_tag }}'
+          FEED_MODE: ${{ inputs.feed_mode }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: ./tools/Test-MoonriseReleaseUpdate.ps1 -FeedMode $env:FEED_MODE -ReleaseTag $env:RELEASE_TAG
       - name: Preserve update evidence
         if: always()
         uses: actions/upload-artifact@v7
