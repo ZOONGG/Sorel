@@ -61,8 +61,10 @@ jobs:
       - name: Prepare manual release assets Setup and Portable artifacts
         shell: pwsh
         run: |
+          [xml]$project = Get-Content src/Sorel/Sorel.csproj -Raw
+          $version = $project.Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
           ./tools/New-SorelRelease.ps1 `
-            -Version "1.0.0" `
+            -Version $version `
             -OutputRoot "artifacts/release" `
             -Velopack -VpkPath artifacts/velopack-tools/vpk.exe `
             -SkipRestore `

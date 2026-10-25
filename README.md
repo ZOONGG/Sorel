@@ -12,7 +12,7 @@
 
 <p align="center">
   <a href="https://github.com/ZOONGG/Sorel/actions/workflows/build.yml"><img alt="Build" src="https://github.com/ZOONGG/Sorel/actions/workflows/build.yml/badge.svg"></a>
-  <a href="https://github.com/ZOONGG/Sorel/releases"><img alt="Sorel 1.0.0" src="https://img.shields.io/badge/release-v1.0.0-violet"></a>
+  <a href="https://github.com/ZOONGG/Sorel/releases"><img alt="Sorel 1.0.1" src="https://img.shields.io/badge/release-v1.0.1-violet"></a>
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-green"></a>
   <img alt="Windows" src="https://img.shields.io/badge/platform-Windows-0078D4?logo=windows">
   <img alt=".NET 8" src="https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet">
@@ -73,7 +73,7 @@ The documented Lunar Launcher baseline is **3.7.23-ow** (ProductVersion 3.7.23.0
 
 ## Installation
 
-Stable release: [Sorel v1.0.0](https://github.com/ZOONGG/Sorel/releases/tag/v1.0.0).
+Stable release: [Sorel v1.0.1](https://github.com/ZOONGG/Sorel/releases/tag/v1.0.1).
 
 When a release is available:
 
@@ -98,7 +98,7 @@ Installed Velopack builds check [Sorel GitHub Releases](https://github.com/ZOONG
 
 Open **Settings → Updates** to check manually. **Automatically download updates** is enabled by default; turn it off to use **Download** yourself. Sorel shows availability, download progress and a ready-to-restart notification. Velopack verifies and stages the package in its installation package directory.
 
-After download, finish Minecraft and current Sorel operations, then use **Install and restart**. A staged update can also be applied on the next startup through Sorel's guarded apply path. Velopack's unconditional startup auto-apply is disabled. Application/tray cleanup precedes restart; active launch/game or operations block application. Settings and installed packages remain in the separate LocalAppData data root; the updater does not migrate or replace that root. An isolated installed Sorel 1.0.0 → local-only 1.0.1 check passed with preserved settings/library. Rollback and live Minecraft remain untested.
+After download, finish Minecraft and current Sorel operations, then use **Install and restart**. A staged update can also be applied on the next startup through Sorel's guarded apply path. Velopack's unconditional startup auto-apply is disabled. Application/tray cleanup precedes restart; active launch/game or operations block application. Settings and installed packages remain in the separate LocalAppData data root; the updater does not migrate or replace that root. The acceptance workflow tests the actual published Sorel 1.0.0 installer updating to the exact 1.0.1 candidate, including settings/library preservation. Rollback and live Minecraft remain untested.
 
 This requires a real Velopack installation, network access to public GitHub, and manually published matching stable feed/package assets (`releases.stable.json` and full `.nupkg`). ZIP, Inno and development builds have Velopack updates disabled. The production stable feed accompanies the release. See [update details](docs/UPDATES.md).
 
@@ -272,3 +272,5 @@ Sorel source code and original Sorel assets are licensed under the [MIT License]
 ## Disclaimer
 
 Sorel is unofficial and is not affiliated with, sponsored by, or endorsed by Lunar Client, Mojang, Microsoft, or Weave. Minecraft and other names and marks belong to their respective owners. Third-party updates may break compatibility at any time.
+
+The Veyra catalog checks the official ZOONGG/Sorel-Veyra stable releases automatically at startup, on opening/returning to Sorel, and every five minutes while Catalog is visible. New JARs require the official release SHA-256; installed packages are not silently replaced. Offline checks retain the last known entries and show that freshness could not be verified.

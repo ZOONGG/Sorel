@@ -1,8 +1,14 @@
 name: Sorel stable installed update smoke
 on:
   workflow_dispatch:
+    inputs:
+      build_run_id:
+        description: Successful Build run for this exact commit (tests its actual Velopack assets)
+        required: true
+        type: string
 permissions:
   contents: read
+  actions: read
 jobs:
   update:
     runs-on: windows-latest
@@ -15,9 +21,23 @@ jobs:
       - name: Build rebranded native bridge
         shell: pwsh
         run: ./tools/Build-NativeBridge.ps1 -OutputPath runtime/bridge/Sorel.Native.dll -WorkingRoot artifacts/native-working
-      - name: Build and test isolated Sorel 1.0.0 to local-only 1.0.1
+      - name: Download exact candidate assets from successful Build
         shell: pwsh
-        run: ./tools/New-SorelInstalledUpdateSmoke.ps1
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_RUN_ID: ${{ inputs.build_run_id }}
+        run: |
+          if ($env:CANDIDATE_RUN_ID -notmatch '^\d+$') { throw 'Invalid Build run ID.' }
+          $run = gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:CANDIDATE_RUN_ID" | ConvertFrom-Json
+          if ($run.status -ne 'completed' -or $run.conclusion -ne 'success' -or $run.head_sha -ne $env:GITHUB_SHA -or $run.name -ne 'Build') { throw 'Candidate must be a successful Build of this exact commit.' }
+          gh run download $env:CANDIDATE_RUN_ID --repo $env:GITHUB_REPOSITORY --pattern 'Sorel-Windows-*' --dir artifacts/update-candidate
+          if ($LASTEXITCODE) { throw 'Candidate download failed.' }
+      - name: Test published Sorel 1.0.0 to exact 1.0.1 candidate
+        shell: pwsh
+        run: |
+          $feeds = @(Get-ChildItem artifacts/update-candidate -Recurse -Filter releases.stable.json)
+          if ($feeds.Count -ne 1) { throw 'Expected one candidate feed.' }
+          ./tools/New-SorelInstalledUpdateSmoke.ps1 -FeedDirectory $feeds[0].DirectoryName
       - uses: actions/upload-artifact@v7
         if: always()
         with:

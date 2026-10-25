@@ -15,11 +15,11 @@
     <SelfContained>true</SelfContained>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <StartupObject>Sorel.App</StartupObject>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
-    <FileVersion>1.0.0.0</FileVersion>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
     <Authors>ZOONGG</Authors>
     <Company>ZOONGG</Company>
     <Copyright>Copyright В© 2026 ZOONGG</Copyright>
