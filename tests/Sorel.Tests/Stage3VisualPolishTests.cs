@@ -95,7 +95,7 @@ public sealed class Stage3VisualPolishTests
         Assert.Contains("x:Name=\"ThemePreviewList\"", xaml, StringComparison.Ordinal);
         Assert.Contains("x:Name=\"CatalogErrorPanel\"", xaml, StringComparison.Ordinal);
         Assert.Contains("T(\"Перетащите JAR-файлы сюда\", \"Drop JAR files here\")", code, StringComparison.Ordinal);
-        Assert.Contains("T(\"Каталог недоступен\", \"Catalog unavailable\")", code, StringComparison.Ordinal);
+        Assert.Contains("Could not check new releases. Showing the last known catalog.", code, StringComparison.Ordinal);
         Assert.DoesNotContain("subscription", xaml, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("account", xaml, StringComparison.OrdinalIgnoreCase);
     }

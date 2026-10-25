@@ -102,6 +102,11 @@ public partial class MainWindow : Window
     private readonly System.Windows.Threading.DispatcherTimer _updateUiTimer = new() { Interval = TimeSpan.FromSeconds(1) };
     private string? _pendingActivationArgument;
     private bool _catalogReady;
+    private bool _catalogRefreshing;
+    private DateTimeOffset _catalogLastAttempt;
+    private readonly CancellationTokenSource _catalogCancellation = new();
+    private readonly HttpClient _officialCatalogHttp = new() { Timeout = TimeSpan.FromSeconds(15) };
+    private readonly System.Windows.Threading.DispatcherTimer _catalogRefreshTimer = new() { Interval = TimeSpan.FromMinutes(5) };
     private DeveloperInspection? _developerInspection;
     private PackageManifest? _developerDraft;
     private string? _developerJarPath;
@@ -291,6 +296,8 @@ public partial class MainWindow : Window
         LoadCachedCatalog();
 
         _catalogReady = true;
+        _catalogRefreshTimer.Tick += async (_, _) => await LoadCatalogAsync(forceRefresh: false);
+        if (!_visualQaMode) _ = LoadCatalogAsync(forceRefresh: false);
         if (!string.IsNullOrWhiteSpace(_pendingActivationArgument))
         {
             var activationArgument = _pendingActivationArgument;
@@ -766,6 +773,7 @@ public partial class MainWindow : Window
     private void MainWindow_Activated(object? sender, EventArgs e)
     {
         if (_initialized) ReloadLanguagePacks();
+        if (_catalogReady && !_visualQaMode) _ = LoadCatalogAsync(forceRefresh: false);
     }
 
     private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -1294,7 +1302,11 @@ public partial class MainWindow : Window
     }
     private void HomeTabButton_Click(object sender, RoutedEventArgs e) => ShowPage(HomePage, HomeTabButton);
     private void LibraryTabButton_Click(object sender, RoutedEventArgs e) => ShowPage(LibraryPage, LibraryTabButton);
-    private void CatalogTabButton_Click(object sender, RoutedEventArgs e) => ShowPage(CatalogPage, CatalogTabButton);
+    private void CatalogTabButton_Click(object sender, RoutedEventArgs e)
+    {
+        ShowPage(CatalogPage, CatalogTabButton);
+        if (!_visualQaMode) _ = LoadCatalogAsync(forceRefresh: false);
+    }
     private void SettingsTabButton_Click(object sender, RoutedEventArgs e) => ShowPage(SettingsPage, SettingsTabButton);
     private void DevelopersTabButton_Click(object sender, RoutedEventArgs e) => ShowPage(DevelopersPage, DevelopersTabButton);
 
@@ -1307,6 +1319,8 @@ public partial class MainWindow : Window
         }
         if (tab is not null)
             tab.IsChecked = true;
+        if (!_visualQaMode && ReferenceEquals(page, CatalogPage)) _catalogRefreshTimer.Start();
+        else _catalogRefreshTimer.Stop();
         _motion.EnterPage(page);
     }
 
@@ -1322,46 +1336,37 @@ public partial class MainWindow : Window
 
     private async Task LoadCatalogAsync(bool forceRefresh)
     {
+        if (_catalogRefreshing || _visualQaMode || _catalogCancellation.IsCancellationRequested) return;
+        if (!forceRefresh && DateTimeOffset.UtcNow - _catalogLastAttempt < TimeSpan.FromMinutes(5)) return;
+        _catalogLastAttempt = DateTimeOffset.UtcNow;
+        _catalogRefreshing = true;
         using var updateOperation = _updateActivity.EnterOperation();
+        RefreshCatalogButton.IsEnabled = false;
         try
         {
-            RefreshCatalogButton.IsEnabled = false;
-            CatalogLoadingPanel.Visibility = Visibility.Visible;
-            CatalogEmptyPanel.Visibility = Visibility.Collapsed;
+            var current = _catalogPackages.Single(package => package.Id == "veyra");
+            var latest = await new OfficialVeyraCatalogClient(_officialCatalogHttp)
+                .GetLatestAsync(current, _catalogCancellation.Token);
+            if (_catalogCancellation.IsCancellationRequested) return;
+            if (!ReferenceEquals(current, latest))
+            {
+                _catalogPackages[_catalogPackages.IndexOf(current)] = latest;
+                RefreshCatalogView();
+            }
             CatalogErrorPanel.Visibility = Visibility.Collapsed;
-            CatalogList.Visibility = Visibility.Collapsed;
-            if (!_motion.ReducedMotion)
-                CatalogLoadingPanel.BeginAnimation(OpacityProperty,
-                    new DoubleAnimation(0.72, 1, TimeSpan.FromMilliseconds(1050))
-                    {
-                        AutoReverse = true,
-                        RepeatBehavior = RepeatBehavior.Forever,
-                        EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut }
-                    }, HandoffBehavior.SnapshotAndReplace);
-            await Task.Yield();
-            _catalogPackages.Clear();
-            _catalogPackages.AddRange(PackageCatalogService.LoadBundledCatalog());
-            RefreshCatalogView();
-            CatalogErrorPanel.Visibility = Visibility.Collapsed;
-            CatalogStateText.Text = T("Каталог обновлён.", "Catalog updated.");
-            AddDiagnostic($"Bundled catalog loaded: entries={_catalogPackages.Count}");
+            CatalogStateText.Text = T("Каталог актуален; Veyra обновляется из официальных релизов.",
+                "Catalog is current; Veyra follows official releases.");
         }
+        catch (OperationCanceledException) when (_catalogCancellation.IsCancellationRequested) { }
         catch (Exception exception)
         {
-            _catalogPackages.Clear();
-            RefreshCatalogView();
-            CatalogEmptyPanel.Visibility = Visibility.Collapsed;
-            CatalogErrorPanel.Visibility = Visibility.Visible;
-            CatalogErrorTitle.Text = T("Каталог недоступен", "Catalog unavailable");
-            CatalogErrorText.Text = T("Проверьте подключение и повторите попытку.", "Check your connection and try again.");
-            CatalogErrorRetryButton.Content = T("Повторить", "Try again");
-            AddDiagnostic($"Catalog error: {exception.Message}");
+            CatalogStateText.Text = T("Не удалось проверить новые версии. Показан последний известный каталог.",
+                "Could not check new releases. Showing the last known catalog.");
+            AddDiagnostic($"Official Veyra catalog refresh failed: {exception.GetType().Name}");
         }
         finally
         {
-            CatalogLoadingPanel.BeginAnimation(OpacityProperty, null);
-            CatalogLoadingPanel.Opacity = 1;
-            CatalogLoadingPanel.Visibility = Visibility.Collapsed;
+            _catalogRefreshing = false;
             RefreshCatalogButton.IsEnabled = true;
         }
     }
@@ -4754,6 +4759,9 @@ public partial class MainWindow : Window
     private void MainWindow_Closed(object? sender, EventArgs e)
     {
         DisposeTrayIcon();
+        _catalogRefreshTimer.Stop();
+        _catalogCancellation.Cancel();
+        _officialCatalogHttp.Dispose();
         _launchUi.CancelReset();
         _importStatusResetCancellation?.Cancel();
         _supportDialogCancellation?.Cancel();
