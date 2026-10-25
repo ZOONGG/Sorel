@@ -39,7 +39,9 @@ public static class CurrentWeaveSyntheticAdapter
         hash.Equals("e3f34c4ad92f1c3bae83c17bbacb45952c156df359cb39d6c34d086b05e83c44", StringComparison.OrdinalIgnoreCase)
         || hash.Equals("40797ad1d1449ffff7c6e7342b79a3edc8d08517505dc2d57ce9d97e0669389c", StringComparison.OrdinalIgnoreCase)
         || hash.Equals("b8dc53894251ba825c0b0a899eeac00db8cf311c9ba02e182f8650c4887b9cfc", StringComparison.OrdinalIgnoreCase)
-        || hash.Equals("26fe6dd9d4a6c3630aca96c22faf52ed6d6fa4f772d23258e1e91f8289abb0ef", StringComparison.OrdinalIgnoreCase);
+        || hash.Equals("26fe6dd9d4a6c3630aca96c22faf52ed6d6fa4f772d23258e1e91f8289abb0ef", StringComparison.OrdinalIgnoreCase)
+        // Genesis 9.10.1: source and shipped adapter bytes passed the Java 17 integration fixture.
+        || hash.Equals("23fddb13d3255963dfbb8c3ee8a33d0a85260902ddbf8abbff66f016ff55b7e4", StringComparison.OrdinalIgnoreCase);
 
     internal static void WriteJar(string path)
     {

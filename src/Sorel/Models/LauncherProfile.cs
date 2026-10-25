@@ -10,6 +10,7 @@ public sealed record LauncherProfile(
     public IReadOnlyList<string> Loaders { get; init; } = [];
     public string? LoaderVersion { get; init; }
     public string? LunarModule { get; init; }
+    public string DisplayLabel => $"{(string.IsNullOrWhiteSpace(Name) ? "Lunar Client" : Name.Trim())} · {GameVersion}";
     public string DetailLabel => $"{Name} · {GameVersion} · {Client}" +
         (Loaders.Count > 0 ? $" · {string.Join(", ", Loaders)}" : "") +
         (!string.IsNullOrWhiteSpace(LunarModule) ? $" · {LunarModule}" : "") + $" · {Id}";

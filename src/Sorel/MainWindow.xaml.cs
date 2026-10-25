@@ -116,6 +116,7 @@ public partial class MainWindow : Window
     private BwhApiRelayService? _bwhApiRelay;
     private bool _explicitExitRequested;
     private bool _settingsControlsReady;
+    private CancellationTokenSource? _importStatusResetCancellation;
     private readonly bool _visualQaMode;
     private StatusLevel _lastStatusLevel = StatusLevel.Working;
     private HttpClient? _supportHttpClient;
@@ -443,6 +444,37 @@ public partial class MainWindow : Window
             RefreshCounts();
         }
 
+        if (state == "settings-language-menu")
+        {
+            ShowPage(SettingsPage, SettingsTabButton);
+            SettingsScrollViewer.ScrollToVerticalOffset(430);
+            await Dispatcher.InvokeAsync(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+            LanguageButton_Click(SettingsLanguageButton, new RoutedEventArgs());
+            await Task.Delay(200);
+            if (LanguagePopup.Child is Border { Child: ScrollViewer languageScroll })
+            {
+                languageScroll.RaiseEvent(new MouseWheelEventArgs(Mouse.PrimaryDevice, Environment.TickCount, -120)
+                {
+                    RoutedEvent = Mouse.PreviewMouseWheelEvent, Source = languageScroll
+                });
+                await Task.Delay(300);
+                if (languageScroll.ScrollableHeight > 0 && languageScroll.VerticalOffset == 0)
+                    throw new InvalidOperationException("Language list did not scroll.");
+                if (!LanguagePopup.IsOpen) throw new InvalidOperationException("Language popup closed while its list scrolled.");
+            }
+        }
+        if (state is "import-status-before" or "import-status-after" or "import-status-superseded")
+        {
+            ShowPage(HomePage, HomeTabButton);
+            ShowImportSummary(new PackageImportSummary(1, 0, 0, 0, []));
+            if (state == "import-status-superseded") SetStatus("QA newer status", StatusLevel.Warning);
+            if (state != "import-status-before") await Task.Delay(LaunchUiState.TerminalDisplayDuration + TimeSpan.FromMilliseconds(350));
+            if (state == "import-status-after" && StatusDetailText.Text.Length != 0)
+                throw new InvalidOperationException("Import detail was not reset.");
+            if (state == "import-status-superseded" && StatusText.Text != "QA newer status")
+                throw new InvalidOperationException("Import reset overwrote a newer status.");
+        }
+
         if (Environment.GetEnvironmentVariable("SOREL_VISUAL_QA_SCREENSHOT") is { Length: > 0 } screenshotPath)
         {
             await Dispatcher.InvokeAsync(
@@ -450,6 +482,8 @@ public partial class MainWindow : Window
                 System.Windows.Threading.DispatcherPriority.ApplicationIdle);
             await Task.Delay(450);
             CaptureVisualQaScreenshot(screenshotPath);
+            if (LanguagePopup.IsOpen && LanguagePopup.Child is FrameworkElement popupVisual)
+                CaptureVisualQaScreenshot(Path.ChangeExtension(screenshotPath, null) + "-popup.png", popupVisual);
             if (string.Equals(
                     Environment.GetEnvironmentVariable("SOREL_VISUAL_QA_EXIT_AFTER_SCREENSHOT"),
                     "1",
@@ -458,17 +492,18 @@ public partial class MainWindow : Window
         }
     }
 
-    private void CaptureVisualQaScreenshot(string outputPath)
+    private void CaptureVisualQaScreenshot(string outputPath, FrameworkElement? target = null)
     {
+        target ??= this;
         var fullPath = Path.GetFullPath(outputPath);
         var directory = Path.GetDirectoryName(fullPath)
                         ?? throw new InvalidOperationException("The screenshot output directory is unavailable.");
         Directory.CreateDirectory(directory);
-        var dpi = VisualTreeHelper.GetDpi(this);
-        var width = Math.Max(1, (int)Math.Ceiling(ActualWidth * dpi.DpiScaleX));
-        var height = Math.Max(1, (int)Math.Ceiling(ActualHeight * dpi.DpiScaleY));
+        var dpi = VisualTreeHelper.GetDpi(target);
+        var width = Math.Max(1, (int)Math.Ceiling(target.ActualWidth * dpi.DpiScaleX));
+        var height = Math.Max(1, (int)Math.Ceiling(target.ActualHeight * dpi.DpiScaleY));
         var bitmap = new RenderTargetBitmap(width, height, dpi.PixelsPerInchX, dpi.PixelsPerInchY, PixelFormats.Pbgra32);
-        bitmap.Render(this);
+        bitmap.Render(target);
         var encoder = new PngBitmapEncoder();
         encoder.Frames.Add(BitmapFrame.Create(bitmap));
         using var stream = new FileStream(fullPath, FileMode.Create, FileAccess.Write, FileShare.Read);
@@ -645,7 +680,7 @@ public partial class MainWindow : Window
             }
             ProfileStateText.Text = profile is null
                 ? T("Создайте профиль в Lunar", "Create it in Lunar first")
-                : profile.DetailLabel;
+                : profile.DisplayLabel;
             ProfileStateText.SetResourceReference(System.Windows.Documents.TextElement.ForegroundProperty,
                 profile is null ? "Warning" : "Success");
         }
@@ -661,13 +696,18 @@ public partial class MainWindow : Window
     private string SelectedVersion => VersionComboBox.SelectedItem as string ?? "1.8.9";
     private void LanguageButton_Click(object sender, RoutedEventArgs e)
     {
-        if (!LanguagePopup.IsOpen) ReloadLanguagePacks();
-        LanguagePopup.IsOpen = !LanguagePopup.IsOpen;
+        var anchor = sender as UIElement ?? LanguageButton;
+        var close = LanguagePopup.IsOpen && ReferenceEquals(LanguagePopup.PlacementTarget, anchor);
+        LanguagePopup.IsOpen = false;
+        if (close) return;
+        ReloadLanguagePacks();
+        LanguagePopup.PlacementTarget = anchor;
+        LanguagePopup.IsOpen = true;
     }
 
     private void MainWindow_PreviewMouseDown(object sender, MouseButtonEventArgs e)
     {
-        if (LanguagePopup.IsOpen && !LanguageButton.IsMouseOver && LanguagePopup.Child?.IsMouseOver != true)
+        if (LanguagePopup.IsOpen && !LanguageButton.IsMouseOver && !SettingsLanguageButton.IsMouseOver && LanguagePopup.Child?.IsMouseOver != true)
             LanguagePopup.IsOpen = false;
     }
 
@@ -1025,7 +1065,8 @@ public partial class MainWindow : Window
         if (Math.Abs(e.VerticalChange) < double.Epsilon && Math.Abs(e.HorizontalChange) < double.Epsilon)
             return;
 
-        LanguagePackComboBox.IsDropDownOpen = false;
+        if (!ReferenceEquals(e.OriginalSource, SettingsScrollViewer)) return;
+        if (ReferenceEquals(LanguagePopup.PlacementTarget, SettingsLanguageButton)) LanguagePopup.IsOpen = false;
         ThemeComboBox.IsDropDownOpen = false;
     }
 
@@ -1397,6 +1438,7 @@ public partial class MainWindow : Window
             AddDiagnostic($"Installed catalog package: {Path.GetFileName(installed)}");
             LoadPackages();
             SetStatus(T("Пакет установлен", "Package installed"), StatusLevel.Ready);
+            _ = ResetImportStatusAsync();
             ShowToast(ToastKind.Success, T("Пакет установлен", "Package installed"), package.Name + T(" — включите в библиотеке", " - enable in Library"));
             ShowPage(LibraryPage, LibraryTabButton);
         }
@@ -1569,7 +1611,7 @@ public partial class MainWindow : Window
         try
         {
             _library.SetEnabled(package, ((System.Windows.Controls.CheckBox)sender).IsChecked == true);
-            LoadPackages();
+            RefreshCounts();
             SaveSettings();
         }
         catch (Exception exception)
@@ -2414,6 +2456,7 @@ public partial class MainWindow : Window
 
     private void ShowImportSummary(PackageImportSummary summary)
     {
+        if (Volatile.Read(ref _launchInProgress) == 0) _launchUi.CancelReset();
         var message = T(
             $"Импортировано: {summary.Imported}\nУже было: {summary.AlreadyPresent}\nНедопустимых: {summary.Invalid}\nОшибок: {summary.Failed}",
             $"Imported: {summary.Imported}\nAlready present: {summary.AlreadyPresent}\nInvalid: {summary.Invalid}\nFailed: {summary.Failed}");
@@ -2427,10 +2470,29 @@ public partial class MainWindow : Window
                 : T("Импорт завершён с ошибками", "Import completed with errors"),
             summary.Invalid + summary.Failed == 0 ? StatusLevel.Ready : StatusLevel.Error,
             message);
+        _ = ResetImportStatusAsync();
         if (summary.Imported > 0 && summary.Invalid + summary.Failed == 0)
             ShowToast(ToastKind.Success, T("Пакет импортирован", "Package imported"), summary.Imported == 1 ? string.Empty : FormatPackageCount(summary.Imported));
         else if (summary.Invalid + summary.Failed > 0)
             ShowToast(ToastKind.Warning, T("Импорт завершён с ошибками", "Import completed with errors"), message);
+    }
+
+    private async Task ResetImportStatusAsync()
+    {
+        using var cancellation = new CancellationTokenSource();
+        _importStatusResetCancellation = cancellation;
+        try
+        {
+            await Task.Delay(LaunchUiState.TerminalDisplayDuration, cancellation.Token);
+            if (Dispatcher.HasShutdownStarted || Volatile.Read(ref _launchInProgress) != 0 ||
+                _activeGameProcessIds.Count != 0 || !_officialLunarCleanup.IsCompleted) return;
+            SetStatus(T("Готов к запуску", "Ready to launch"), StatusLevel.Ready);
+        }
+        catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }
+        finally
+        {
+            if (ReferenceEquals(_importStatusResetCancellation, cancellation)) _importStatusResetCancellation = null;
+        }
     }
 
     private async Task ScanPackageFoldersAsync(bool showSummary)
@@ -4540,6 +4602,7 @@ public partial class MainWindow : Window
     private void SetStatus(string text, StatusLevel level, string? detail = null, string? headerText = null)
     {
         if (!Dispatcher.CheckAccess()) { Dispatcher.Invoke(() => SetStatus(text, level, detail, headerText)); return; }
+        _importStatusResetCancellation?.Cancel();
         _lastStatusLevel = level;
         var brushKey = level switch
         {
@@ -4692,6 +4755,7 @@ public partial class MainWindow : Window
     {
         DisposeTrayIcon();
         _launchUi.CancelReset();
+        _importStatusResetCancellation?.Cancel();
         _supportDialogCancellation?.Cancel();
         _supportDialogCancellation?.Dispose();
         _supportFlow?.Dispose();

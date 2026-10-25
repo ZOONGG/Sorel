@@ -67,7 +67,8 @@ public sealed class Stage2PageCompositionTests
 
         Assert.Contains("x:Name=\"SettingsScrollViewer\"", xaml, StringComparison.Ordinal);
         Assert.Contains("ScrollChanged=\"SettingsScrollViewer_ScrollChanged\"", xaml, StringComparison.Ordinal);
-        Assert.Contains("LanguagePackComboBox.IsDropDownOpen = false", code, StringComparison.Ordinal);
+        Assert.Contains("x:Name=\"SettingsLanguageButton\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("LanguagePopup.PlacementTarget = anchor", code, StringComparison.Ordinal);
         Assert.Contains("ThemeComboBox.IsDropDownOpen = false", code, StringComparison.Ordinal);
         foreach (var removed in new[] { "BackgroundLaunchCheckBox", "SafeLaunchCheckBox", "CatalogAutoUpdateCheckBox", "PrivacyTitle" })
             Assert.DoesNotContain($"x:Name=\"{removed}\"", xaml, StringComparison.Ordinal);

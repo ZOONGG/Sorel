@@ -11,6 +11,7 @@ public sealed class CurrentWeaveSyntheticAdapterTests
     [InlineData("40797ad1d1449ffff7c6e7342b79a3edc8d08517505dc2d57ce9d97e0669389c")]
     [InlineData("B8DC53894251BA825C0B0A899EEAC00DB8CF311C9BA02E182F8650C4887B9CFC")]
     [InlineData("26FE6DD9D4A6C3630ACA96C22FAF52ED6D6FA4F772D23258E1E91F8289ABB0EF")]
+    [InlineData("23FDDB13D3255963DFBB8C3EE8A33D0A85260902DDBF8ABBFF66F016FF55B7E4")]
     public void OnlyOfflineVerifiedRuntimeBuildsAreAccepted(string hash)
     {
         Assert.True(CurrentWeaveSyntheticAdapter.IsVerifiedGenesisHash(hash));
