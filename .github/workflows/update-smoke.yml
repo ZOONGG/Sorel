@@ -32,7 +32,7 @@ jobs:
           if ($run.status -ne 'completed' -or $run.conclusion -ne 'success' -or $run.head_sha -ne $env:GITHUB_SHA -or $run.name -ne 'Build') { throw 'Candidate must be a successful Build of this exact commit.' }
           gh run download $env:CANDIDATE_RUN_ID --repo $env:GITHUB_REPOSITORY --pattern 'Sorel-Windows-*' --dir artifacts/update-candidate
           if ($LASTEXITCODE) { throw 'Candidate download failed.' }
-      - name: Test published Sorel 1.0.0 to exact 1.0.1 candidate
+      - name: Test published Sorel 1.0.1 to exact candidate
         shell: pwsh
         run: |
           $feeds = @(Get-ChildItem artifacts/update-candidate -Recurse -Filter releases.stable.json)

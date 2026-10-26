@@ -53,8 +53,8 @@ if (args[1] == "bad") {
     throw new Exception("Expected download failure.");
 }
 var update = await service.CheckAndDownloadAsync(true, u => Console.WriteLine($"Found: {u.TargetFullRelease.Version}"));
-if (update is null || service.PendingRestart?.Version.ToString() != "1.0.1")
-    throw new Exception("Expected 1.0.1 staged.");
+if (update is null || service.PendingRestart?.Version != update.TargetFullRelease.Version)
+    throw new Exception("Expected candidate update staged.");
 Console.WriteLine("PASS real download and pending restart");
 if (args[1] == "apply") {
     Console.WriteLine("Applying through Sorel UpdateService and native Update.exe");

@@ -8,8 +8,9 @@ import net.weavemc.loader.impl.shaded.asm.tree.*;
 public final class SyntheticLoaderAdapter implements ClassFileTransformer {
     static final String GENESIS = "com/moonsworth/lunar/genesis/ORCOIHCCICICIHRCCCCHHHRICHHICI";
     static final String GENESIS_9_10_1 = "com/moonsworth/lunar/genesis/HIIIRCIHHCOIRCOHOIIRRCRIHHRICI";
+    static final String GENESIS_20261026 = "com/moonsworth/lunar/genesis/COIOIRHRRORRHHOIIORORRHOOCRHII";
     private static boolean isGameLoader(String name) {
-        return GENESIS.equals(name) || GENESIS_9_10_1.equals(name);
+        return GENESIS.equals(name) || GENESIS_9_10_1.equals(name) || GENESIS_20261026.equals(name);
     }
     private final URL self;
     private SyntheticLoaderAdapter(URL self) { this.self = self; }

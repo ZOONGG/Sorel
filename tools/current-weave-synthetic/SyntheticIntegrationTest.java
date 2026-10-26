@@ -17,12 +17,13 @@ public final class SyntheticIntegrationTest {
     public static byte[] generate(ClassLoader loader, String name) { return name.equals(generatedName) ? generated : null; }
     public static void main(String[] args) throws Exception {
         String gameLoaderName = args.length > 1 ? args[1] : SyntheticLoaderAdapter.GENESIS;
+        boolean latest = gameLoaderName.equals(SyntheticLoaderAdapter.GENESIS_20261026);
         boolean current = gameLoaderName.equals(SyntheticLoaderAdapter.GENESIS_9_10_1);
-        String pipelineName = "com.moonsworth.lunar.ichor." + (current
+        String pipelineName = "com.moonsworth.lunar.ichor." + (latest ? "HHROHORCRHHRHCHHOCOCIHHCIORHIH" : current
                 ? "CHHCRRRCCHCHOHCIHIHCIOHRORHCRC" : "ROHIOOCICRORHRCIHHHHHHRICCCRRC");
-        String stageName = "com.moonsworth.lunar.ichor." + (current
+        String stageName = "com.moonsworth.lunar.ichor." + (latest ? "RHIOIIOORCOOCCRCHOHHOOIIHRHCIH" : current
                 ? "OOCHHCIRCOCHOOOCIOIIHCRIIHRRCH" : "OOIOHHHCIICRRRCICOIIIRRRICOCIC");
-        String exclusionsSetter = current ? "COICRCRHIRHOOHHIOICHRHOCCRCCHO" : "CCIIROCRRHHROIRHRRIHOCRHIHIOHO";
+        String exclusionsSetter = latest ? "RICIHORIHRICIOOCORCROIRRIRRHOR" : current ? "COICRCRHIRHOOHHIOICHRHOCCRCCHO" : "CCIIROCRRHHROIRHRRIHOCRHIHIOHO";
         System.getProperties().put("weave.game.info", Map.of("version", "1.8.9", "client", "lunar client"));
         var sandbox = new SandboxedMixinLoader(SyntheticIntegrationTest.class.getClassLoader(), ClasspathLoaders.INSTANCE.fromLoader(SyntheticIntegrationTest.class.getClassLoader()));
         var state = sandbox.getState(); state.initialize();

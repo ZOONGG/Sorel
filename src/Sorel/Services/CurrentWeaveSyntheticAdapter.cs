@@ -6,7 +6,7 @@ namespace Sorel.Services;
 // OfficialLunar current Weave only; adapter lifetime follows the existing launch session.
 public static class CurrentWeaveSyntheticAdapter
 {
-    public const string Id = "sorel-current-weave-synthetic-1.1.0";
+    public const string Id = "sorel-current-weave-synthetic-1.2.0";
     public static LaunchPlan Prepare(LaunchPlan plan, string sessionDirectory)
     {
         if (plan.WeaveMode != WeaveRuntimeMode.Current) return plan;
@@ -41,7 +41,8 @@ public static class CurrentWeaveSyntheticAdapter
         || hash.Equals("b8dc53894251ba825c0b0a899eeac00db8cf311c9ba02e182f8650c4887b9cfc", StringComparison.OrdinalIgnoreCase)
         || hash.Equals("26fe6dd9d4a6c3630aca96c22faf52ed6d6fa4f772d23258e1e91f8289abb0ef", StringComparison.OrdinalIgnoreCase)
         // Genesis 9.10.1: source and shipped adapter bytes passed the Java 17 integration fixture.
-        || hash.Equals("23fddb13d3255963dfbb8c3ee8a33d0a85260902ddbf8abbff66f016ff55b7e4", StringComparison.OrdinalIgnoreCase);
+        || hash.Equals("23fddb13d3255963dfbb8c3ee8a33d0a85260902ddbf8abbff66f016ff55b7e4", StringComparison.OrdinalIgnoreCase)
+        || hash.Equals("1cd59b4815b6276c4e6d66306fc2126db054352e1a142f62f25860cc6aaefbad", StringComparison.OrdinalIgnoreCase);
 
     internal static void WriteJar(string path)
     {
